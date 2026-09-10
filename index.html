@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#EFEFEF" />
+<title>Conta digital</title>
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADcklEQVR4nO3d601bURCF0SHFUERKSDephG5SQurKDyNIJHZEcp9nZq0CLkb7k7EN9/D0/PxS8JEvVz8A7kscROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjE8Yef375f/RBuRBzvHmXo4404Xv3ehD4exFH1UQ36KHFU7kAf0+P4ewHD+xgdx2e2n9zH3Dg+v/rYPobG8a97z+xjYhz/t/TAPsbFsWXjaX3MimP7uqP6GBTHXrvO6WNKHPsuOqSPEXEcseWEPvrHcdyK7ftoHsfR+/Xuo3Mc5yzXuI+2cZy5Wdc+esZx/lot+2gYx5advv54ueTr3lO3OLaXoY83reLY6zlDHw994tj3p4k+qk0cR7zO0EeHOI57BTq8j+XjOPq9yeQ+1o7jnHetY/tYOI4zP8+Y2ceqcZz/SdfAPpaM46rPQKf1sV4cV5Wx/QrL9bFYHNeWsf06a/WxUhx3KGP71RbqY5k47lPG9muu0scycdxtjLvFeoRl4qg79TGhjForjrpHH0PKqOXiqKv7mFNGrRhHXdfHqDJq0Tjqij6mlVHrxlHn9jGwjFo6jjqrj5ll1Opx1PF9jC2jGsRRR/YxuYzqEUcd08fwMqpNHLV3H8qoTnHUfn0o46FVHLVHH8p48/T83Or7ebjkd+LNyqh+zxwP5+/Ur4zqGkedu1bLMqpxHHXWZl3LqN5x1PHLNS6j2sdRR+7Xu4yaEEfd7w+MVzEijrrTrQkLmRJH3eOmprUMiqOuvh1yObPiqOtupF7RuDjqiiMYFjUxjjr38JZ1DY2jzjr2aWlz46jjD4xb3eg46sijJhuYHkcdc0htD+Ko2vt46zbE8Wqvg/E7Ece77f9So5mef0PKLjxzEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA6iXzV/JwhCXKU3AAAAAElFTkSuQmCC" />
+<style>
+  html,body{margin:0;padding:0;background:#D8D8DA}
+  #raiz{min-height:100vh}
+</style>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+</head>
+<body>
+<div id="raiz"></div>
+<script type="text/babel">
+const { useState, useMemo, useEffect, useRef } = React;
+
+/* ------------------------------------------------------------------ */
+/*  Utilidades                                                         */
+/* ------------------------------------------------------------------ */
+
+const HOJE = "2026-09-10";
+const INICIO = "2026-09-01"; // nada anterior a esta data aparece no app
+
+const MESES = [
+  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+];
+
+const brl = (n) =>
+  Math.abs(n).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+const dataLonga = (iso) => {
+  const [a, m, d] = iso.split("-");
+  return `${d} de ${MESES[Number(m) - 1]} de ${a}`;
+};
+
+const dataCurta = (iso) => {
+  const [a, m, d] = iso.split("-");
+  return `${d}/${m}/${a}`;
+};
+
+const diasEntre = (isoA, isoB) =>
+  Math.round((new Date(isoA) - new Date(isoB)) / 86400000);
+
+/* ------------------------------------------------------------------ */
+/*  Dados iniciais                                                     */
+/* ------------------------------------------------------------------ */
+
+const SALDO_INICIAL = 1830.75;
+
+const LANCAMENTOS = [
+  { id: "t1", data: "2026-09-08", tipo: "saida", kind: "Pix enviado", nome: "Lucas Araújo De Vasconcelos", valor: 200, cat: "Transferências" },
+  { id: "t2", data: "2026-09-08", tipo: "entrada", kind: "Pix recebido", nome: "Iraneide Maria De Araujo Vasconcelos", valor: 100, cat: "Transferências" },
+  { id: "t3", data: "2026-09-08", tipo: "entrada", kind: "Pix recebido", nome: "Ademir Alexandre De Vasconcelos", valor: 100, cat: "Transferências" },
+  { id: "t4", data: "2026-09-01", tipo: "entrada", kind: "Pix recebido", nome: "Andrea Araujo Vasconcelos", valor: 2400, cat: "Transferências" },
+  { id: "t5", data: "2026-09-01", tipo: "saida", kind: "Pix enviado", nome: "Lucas Araújo De Vasconcelos", valor: 569.25, cat: "Transferências" },
+];
+
+const FUTUROS = [
+  { id: "f1", data: "2026-09-12", tipo: "saida", kind: "Débito automático", nome: "Vivo Fibra 500 Mega", valor: 119.9 },
+  { id: "f2", data: "2026-09-15", tipo: "saida", kind: "Fatura do cartão", nome: "Cartão Click Visa · final 4417", valor: 742.35 },
+  { id: "f3", data: "2026-09-20", tipo: "entrada", kind: "Salário", nome: "Crédito em conta", valor: 2400 },
+  { id: "f4", data: "2026-09-30", tipo: "saida", kind: "Pix agendado", nome: "Marcos Ferreira · aluguel", valor: 900 },
+];
+
+const FATURA = [
+  { id: "c1", data: "2026-09-09", nome: "Assinatura de streaming", valor: 39.9 },
+  { id: "c2", data: "2026-09-06", nome: "Livraria Cultura", valor: 128.5 },
+  { id: "c3", data: "2026-09-02", nome: "Restaurante Oficina do Sabor", valor: 214.0 },
+  { id: "c4", data: "2026-09-01", nome: "Passagem aérea REC · GRU", valor: 359.95 },
+];
+
+const CONTATOS = [
+  { nome: "Lucas Araújo De Vasconcelos", chave: "lucas.vasconcelos@email.com", banco: "Itaú Unibanco" },
+  { nome: "Iraneide Maria De Araujo Vasconcelos", chave: "(81) 9 ****-3021", banco: "Caixa Econômica" },
+  { nome: "Ademir Alexandre De Vasconcelos", chave: "***.508.214-**", banco: "Bradesco" },
+  { nome: "Andrea Araujo Vasconcelos", chave: "(81) 9 ****-7745", banco: "Nubank" },
+];
+
+const CORES_CAT = {
+  Moradia: "#26268F",
+  Alimentação: "#EC7000",
+  Transferências: "#6E6EC4",
+  Transporte: "#0F8A55",
+  Outros: "#9A9A9A",
+  Renda: "#0F8A55",
+};
+
+/* ------------------------------------------------------------------ */
+/*  Ícones                                                             */
+/* ------------------------------------------------------------------ */
+
+const P = {
+  voltar: "M15 4.5 8 12l7 7.5",
+  olho: "M2.2 12S6 6.2 12 6.2 21.8 12 21.8 12 18 17.8 12 17.8 2.2 12 2.2 12Z|M12 9.4a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2Z",
+  olhoOff: "M3.6 4.4 20.4 19.6|M9.3 6.7C10.2 6.4 11.1 6.2 12 6.2c6 0 9.8 5.8 9.8 5.8a17 17 0 0 1-3.3 3.7|M6.4 8.3A16.7 16.7 0 0 0 2.2 12S6 17.8 12 17.8c1.2 0 2.3-.2 3.3-.6",
+  ajuda: "M12 2.6a9.4 9.4 0 1 0 0 18.8 9.4 9.4 0 0 0 0-18.8Z|M9.4 9.3a2.7 2.7 0 1 1 3.6 2.6c-.7.3-1 .9-1 1.6v.4|M12 17.2h.01",
+  bancos: "M12 3.4a8.6 8.6 0 1 1-8.4 6.7|M3.2 4.4v3.9h3.9|M12 7.6v4.6l3.2 1.9",
+  cofre: "M4.6 4.4h14.8v15.2H4.6z|M13.8 12a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0Z|M11.4 12h4.6",
+  pix: "M12 3.2 15 6.2l-3 3-3-3 3-3Z|M12 14.8l3 3-3 3-3-3 3-3Z|M6.6 8.6l3 3-3 3-3-3 3-3Z|M17.4 8.6l3 3-3 3-3-3 3-3Z",
+  cartao: "M3.2 6.4h17.6v11.2H3.2z|M3.2 10.4h17.6",
+  combina: "M12 2.8 14 5l3-.6.6 3 2.6 1.6-1.6 2.6 1 3-2.8 1.2-1 3-3-.6-2.4 1.8-2.4-1.8-3 .6-1-3L3.2 15l1-3L2.6 9.4 5.2 7.8l.6-3 3 .6L12 2.8Z|M10 14l4-4",
+  gastos: "M3.2 6.8h17.6v10.4H3.2z|M14.2 12a2.2 2.2 0 1 1-4.4 0 2.2 2.2 0 0 1 4.4 0Z",
+  comprovante: "M5.6 3.4h12.8v17.2l-2.4-1.4-2.4 1.4-2.4-1.4-2.4 1.4-3.2 1.4z|M8.8 8.4h6.4|M8.8 12.2h6.4|M8.8 16h4",
+  baixar: "M12 4v10.4|M8 10.8l4 3.8 4-3.8|M4.4 19.4h15.2",
+  buscar: "M11 3.6a7.4 7.4 0 1 0 0 14.8 7.4 7.4 0 0 0 0-14.8Z|M16.4 16.4 20.6 20.6",
+  seta: "M9.4 5.6 15.8 12l-6.4 6.4",
+  baixo: "M6.2 9.4 12 15.2l5.8-5.8",
+  troca: "M3.6 9.2h15.2l-3.6-3.6|M20.4 14.8H5.2l3.6 3.6",
+  entrada: "M4.4 9.2h9.4l-3-3|M20.4 14.8H8.6l3 3|M17.6 6.6a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z",
+  sacola: "M5 7.6h14l-1.2 12.2H6.2L5 7.6Z|M8.8 9.6V6.8a3.2 3.2 0 0 1 6.4 0v2.8",
+  boleto: "M3.4 5.6v12.8|M6.2 5.6v12.8|M8.6 5.6v12.8|M12 5.6v12.8|M15.4 5.6v12.8|M18 5.6v12.8|M20.6 5.6v12.8",
+  mais: "M12 5.6v12.8|M5.6 12h12.8",
+  menos: "M5.6 12h12.8",
+  check: "M4.8 12.6 9.6 17.4 19.2 6.6",
+  apagar: "M9.2 5.6h11.2v12.8H9.2L3.6 12l5.6-6.4Z|M12.8 9.8l4.4 4.4|M17.2 9.8l-4.4 4.4",
+  copiar: "M8.4 8.4h11.2v11.2H8.4z|M15.6 8.4V4.4H4.4v11.2h4",
+  compartilhar: "M6.4 13.6a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8Z|M17.6 7.6a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8Z|M17.6 21.2a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8Z|M8.6 10.2l6.8-3.4|M8.6 13.8l6.8 3.4",
+};
+
+function Icone({ nome, tam = 24, cor = "currentColor", larg = 1.5, className = "" }) {
+  const d = P[nome];
+  if (!d) return null;
+  return (
+    <svg
+      className={className}
+      width={tam}
+      height={tam}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={cor}
+      strokeWidth={larg}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {d.split("|").map((p, i) => (
+        <path key={i} d={p} />
+      ))}
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Peças de interface                                                 */
+/* ------------------------------------------------------------------ */
+
+function Valor({ n, oculto, sinal, classe = "" }) {
+  if (oculto) return <span className={"b-oculto " + classe} aria-label="valor oculto" />;
+  const s = sinal === "saida" ? "- " : sinal === "entrada" ? "+ " : "";
+  return <span className={classe}>{s}R$ {brl(n)}</span>;
+}
+
+function Cabecalho({ titulo, aoVoltar, direita }) {
+  return (
+    <div className="b-topo">
+      {aoVoltar ? (
+        <button className="b-icone-btn" onClick={aoVoltar} aria-label="Voltar">
+          <Icone nome="voltar" tam={22} />
+        </button>
+      ) : (
+        <span className="b-topo-vazio" />
+      )}
+      <h1 className="b-topo-titulo">{titulo}</h1>
+      <div className="b-topo-dir">{direita}</div>
+    </div>
+  );
+}
+
+function iconeDoKind(kind) {
+  if (kind.startsWith("Pix enviado") || kind === "Pix agendado") return "troca";
+  if (kind.startsWith("Pix recebido") || kind === "Salário") return "entrada";
+  if (kind.startsWith("Compra")) return "sacola";
+  if (kind.startsWith("Fatura")) return "cartao";
+  if (kind.startsWith("Empréstimo")) return "combina";
+  if (kind.startsWith("Guardado") || kind.startsWith("Resgate")) return "cofre";
+  return "boleto";
+}
+
+function Linha({ t, oculto, aoAbrir }) {
+  return (
+    <button className="b-lanc" onClick={aoAbrir ? () => aoAbrir(t) : undefined}>
+      <span className={"b-lanc-ic " + (t.tipo === "entrada" ? "b-verde" : "")}>
+        <Icone nome={iconeDoKind(t.kind)} tam={22} larg={1.4} />
+      </span>
+      <span className="b-lanc-txt">
+        <span className="b-lanc-kind">{t.kind}</span>
+        <span className="b-lanc-nome">{t.nome}</span>
+        <span className={"b-lanc-val " + (t.tipo === "entrada" ? "b-verde-txt" : "")}>
+          <Valor n={t.valor} oculto={oculto} sinal={t.tipo} />
+        </span>
+      </span>
+      {aoAbrir && <Icone nome="seta" tam={18} larg={1.4} className="b-lanc-seta" />}
+    </button>
+  );
+}
+
+function Filtro({ rotulo, opcoes, valor, aoMudar }) {
+  const [aberto, setAberto] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const fora = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setAberto(false);
+    };
+    document.addEventListener("mousedown", fora);
+    return () => document.removeEventListener("mousedown", fora);
+  }, []);
+  const atual = opcoes.find((o) => o.v === valor);
+  return (
+    <div className="b-filtro-wrap" ref={ref}>
+      <button
+        className={"b-chip " + (aberto ? "b-chip-on" : "")}
+        onClick={() => setAberto((a) => !a)}
+        aria-expanded={aberto}
+      >
+        {atual ? atual.r : rotulo}
+        <Icone nome="baixo" tam={16} larg={1.6} />
+      </button>
+      {aberto && (
+        <div className="b-pop" role="listbox">
+          {opcoes.map((o) => (
+            <button
+              key={o.v}
+              className={"b-pop-item " + (o.v === valor ? "b-pop-item-on" : "")}
+              onClick={() => {
+                aoMudar(o.v);
+                setAberto(false);
+              }}
+            >
+              {o.r}
+              {o.v === valor && <Icone nome="check" tam={16} larg={2} />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Teclado({ onDigito, onApagar }) {
+  const teclas = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"];
+  return (
+    <div className="b-teclado">
+      {teclas.map((t, i) =>
+        t === "" ? (
+          <span key={i} />
+        ) : t === "del" ? (
+          <button key={i} className="b-tecla" onClick={onApagar} aria-label="Apagar">
+            <Icone nome="apagar" tam={24} larg={1.4} />
+          </button>
+        ) : (
+          <button key={i} className="b-tecla" onClick={() => onDigito(t)}>
+            {t}
+          </button>
+        )
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  App                                                                */
+/* ------------------------------------------------------------------ */
+
+function App() {
+  const [tela, setTela] = useState("extrato");
+  const [oculto, setOculto] = useState(false);
+  const [saldo, setSaldo] = useState(SALDO_INICIAL);
+  const [lancs, setLancs] = useState(LANCAMENTOS);
+  const [aba, setAba] = useState("recentes");
+  const [periodo, setPeriodo] = useState(90);
+  const [fluxo, setFluxo] = useState("todos");
+  const [ordem, setOrdem] = useState("recentes");
+  const [busca, setBusca] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [recibo, setRecibo] = useState(null);
+  const [ajuda, setAjuda] = useState(false);
+  const [opiniao, setOpiniao] = useState(true);
+
+  const [cofres, setCofres] = useState([
+    { id: "p1", nome: "Reserva de emergência", saldo: 0, meta: 5000, cor: "#26268F" },
+    { id: "p2", nome: "Viagem a Noronha", saldo: 0, meta: 2500, cor: "#EC7000" },
+  ]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 2600);
+    return () => clearTimeout(id);
+  }, [toast]);
+
+  const avisar = (t) => setToast(t);
+
+  const registrar = (t) => {
+    setLancs((l) => [{ ...t, id: "n" + Date.now() + Math.random() }, ...l]);
+    setSaldo((s) => (t.tipo === "entrada" ? s + t.valor : s - t.valor));
+  };
+
+  /* saldo de cada dia, sempre a partir da lista completa */
+  const saldosPorDia = useMemo(() => {
+    const dias = [...new Set(lancs.map((t) => t.data))].sort((a, b) => b.localeCompare(a));
+    const mapa = {};
+    let corrente = saldo;
+    for (const d of dias) {
+      mapa[d] = corrente;
+      const liquido = lancs
+        .filter((t) => t.data === d)
+        .reduce((acc, t) => acc + (t.tipo === "entrada" ? t.valor : -t.valor), 0);
+      corrente = corrente - liquido;
+    }
+    return mapa;
+  }, [lancs, saldo]);
+
+  const grupos = useMemo(() => {
+    let lista = lancs.filter(
+      (t) => t.data >= INICIO && diasEntre(HOJE, t.data) <= periodo
+    );
+    if (fluxo !== "todos") lista = lista.filter((t) => t.tipo === fluxo);
+    if (busca && busca.trim()) {
+      const q = busca.toLowerCase();
+      lista = lista.filter(
+        (t) => t.nome.toLowerCase().includes(q) || t.kind.toLowerCase().includes(q)
+      );
+    }
+    const dias = [...new Set(lista.map((t) => t.data))].sort((a, b) =>
+      ordem === "recentes" ? b.localeCompare(a) : a.localeCompare(b)
+    );
+    return dias.map((d) => ({
+      data: d,
+      saldoDia: saldosPorDia[d],
+      itens: lista.filter((t) => t.data === d),
+    }));
+  }, [lancs, periodo, fluxo, ordem, busca, saldosPorDia]);
+
+  const gruposFuturos = useMemo(() => {
+    const dias = [...new Set(FUTUROS.map((t) => t.data))].sort();
+    return dias.map((d) => ({ data: d, itens: FUTUROS.filter((t) => t.data === d) }));
+  }, []);
+
+  const guardado = cofres.reduce((a, c) => a + c.saldo, 0);
+
+  const props = {
+    oculto, saldo, setSaldo, lancs, registrar, avisar, setTela, setRecibo,
+    cofres, setCofres, guardado,
+  };
+
+  return (
+    <div className="b-fundo">
+      <style>{CSS}</style>
+      <div className="b-tela">
+        <div className="b-status">
+          <span>09:41</span>
+          <span className="b-status-dir">
+            <span className="b-sinal" />
+            <span className="b-bateria">70</span>
+          </span>
+        </div>
+
+        {tela === "extrato" && (
+          <Extrato
+            {...props}
+            aba={aba} setAba={setAba}
+            periodo={periodo} setPeriodo={setPeriodo}
+            fluxo={fluxo} setFluxo={setFluxo}
+            ordem={ordem} setOrdem={setOrdem}
+            busca={busca} setBusca={setBusca}
+            grupos={grupos} gruposFuturos={gruposFuturos}
+            setOculto={setOculto} setAjuda={setAjuda}
+            opiniao={opiniao} setOpiniao={setOpiniao}
+          />
+        )}
+        {tela === "pix" && <Pix {...props} />}
+        {tela === "cartoes" && <Cartoes {...props} />}
+        {tela === "combina" && <Combina {...props} />}
+        {tela === "gastos" && <Gastos {...props} />}
+        {tela === "comprovantes" && <Comprovantes {...props} />}
+        {tela === "cofrinhos" && <Cofrinhos {...props} />}
+
+        {recibo && <Recibo t={recibo} oculto={oculto} aoFechar={() => setRecibo(null)} avisar={avisar} />}
+        {ajuda && (
+          <div className="b-modal" onClick={() => setAjuda(false)}>
+            <div className="b-folha" onClick={(e) => e.stopPropagation()}>
+              <h2 className="b-folha-tit">Sobre este app</h2>
+              <p className="b-folha-txt">
+                Protótipo de conta digital. Os saldos, lançamentos e transferências
+                existem só aqui dentro: nada é enviado a um banco de verdade.
+              </p>
+              <button className="b-btn" onClick={() => setAjuda(false)}>Entendi</button>
+            </div>
+          </div>
+        )}
+        {toast && <div className="b-toast">{toast}</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Extrato                                                            */
+/* ------------------------------------------------------------------ */
+
+function Extrato({
+  oculto, setOculto, saldo, guardado, grupos, gruposFuturos, aba, setAba,
+  periodo, setPeriodo, fluxo, setFluxo, ordem, setOrdem, busca, setBusca,
+  setTela, setRecibo, setAjuda, avisar, opiniao, setOpiniao,
+}) {
+  const atalhos = [
+    { ic: "pix", r1: "Pix e", r2: "transferir", ir: "pix" },
+    { ic: "cartao", r1: "Cartões", r2: "", ir: "cartoes" },
+    { ic: "combina", r1: "Combina", r2: "aqui", ir: "combina" },
+    { ic: "gastos", r1: "Controle", r2: "de Gastos", ir: "gastos" },
+    { ic: "comprovante", r1: "Compro-", r2: "vantes", ir: "comprovantes" },
+  ];
+
+  return (
+    <>
+      <Cabecalho
+        titulo="Extrato"
+        direita={
+          <>
+            <button
+              className="b-icone-btn"
+              onClick={() => setOculto(!oculto)}
+              aria-label={oculto ? "Mostrar valores" : "Ocultar valores"}
+            >
+              <Icone nome={oculto ? "olhoOff" : "olho"} tam={22} />
+            </button>
+            <button className="b-icone-btn" onClick={() => setAjuda(true)} aria-label="Ajuda">
+              <Icone nome="ajuda" tam={22} />
+            </button>
+          </>
+        }
+      />
+
+      <div className="b-saldo-bloco">
+        <p className="b-saldo-rot">Saldo da conta</p>
+        <p className="b-saldo-num">
+          {oculto ? <span className="b-oculto b-oculto-g" /> : <>R$ {brl(saldo)}</>}
+        </p>
+      </div>
+
+      <button className="b-linha-menu" onClick={() => avisar("Nenhum banco conectado ainda.")}>
+        <Icone nome="bancos" tam={26} larg={1.4} />
+        <span className="b-linha-menu-r">Outros bancos</span>
+        <span className="b-linha-menu-a">Conectar saldos</span>
+        <Icone nome="seta" tam={18} larg={1.4} />
+      </button>
+      <div className="b-divisor" />
+      <button className="b-linha-menu" onClick={() => setTela("cofrinhos")}>
+        <Icone nome="cofre" tam={26} larg={1.4} />
+        <span className="b-linha-menu-r">Cofrinhos</span>
+        <span className="b-linha-menu-a">
+          {oculto ? "Acessar" : `R$ ${brl(guardado)}`}
+        </span>
+        <Icone nome="seta" tam={18} larg={1.4} />
+      </button>
+
+      <div className="b-atalhos">
+        {atalhos.map((a) => (
+          <button key={a.ic} className="b-atalho" onClick={() => setTela(a.ir)}>
+            <span className="b-atalho-cx">
+              <Icone nome={a.ic} tam={26} larg={1.4} />
+            </span>
+            <span className="b-atalho-r">
+              {a.r1}
+              {a.r2 && <><br />{a.r2}</>}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <div className="b-folha-lanc">
+        <div className="b-lanc-topo">
+          <h2 className="b-secao">Lançamentos</h2>
+          <div className="b-lanc-acoes">
+            <button className="b-icone-btn" onClick={() => setTela("comprovantes")} aria-label="Baixar comprovantes">
+              <Icone nome="baixar" tam={22} />
+            </button>
+            <button
+              className="b-icone-btn"
+              onClick={() => setBusca(busca === null ? "" : null)}
+              aria-label="Buscar lançamento"
+            >
+              <Icone nome="buscar" tam={22} />
+            </button>
+          </div>
+        </div>
+
+        <div className="b-abas">
+          <button
+            className={"b-aba " + (aba === "recentes" ? "b-aba-on" : "")}
+            onClick={() => setAba("recentes")}
+          >
+            Recentes
+          </button>
+          <button
+            className={"b-aba " + (aba === "futuros" ? "b-aba-on" : "")}
+            onClick={() => setAba("futuros")}
+          >
+            Futuros
+          </button>
+        </div>
+
+        {aba === "recentes" ? (
+          <>
+            {busca !== null && (
+              <input
+                className="b-busca"
+                autoFocus
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar por nome ou tipo"
+              />
+            )}
+
+            <div className="b-filtros">
+              <Filtro
+                rotulo="Período"
+                valor={periodo}
+                aoMudar={setPeriodo}
+                opcoes={[
+                  { v: 7, r: "7 dias" },
+                  { v: 15, r: "15 dias" },
+                  { v: 90, r: "Desde 01/09" },
+                ]}
+              />
+              <Filtro
+                rotulo="Entradas e saídas"
+                valor={fluxo}
+                aoMudar={setFluxo}
+                opcoes={[
+                  { v: "todos", r: "Entradas e saídas" },
+                  { v: "entrada", r: "Só entradas" },
+                  { v: "saida", r: "Só saídas" },
+                ]}
+              />
+              <Filtro
+                rotulo="Mais recentes"
+                valor={ordem}
+                aoMudar={setOrdem}
+                opcoes={[
+                  { v: "recentes", r: "Mais recentes" },
+                  { v: "antigos", r: "Mais antigos" },
+                ]}
+              />
+            </div>
+
+            {grupos.length === 0 ? (
+              <div className="b-vazio">
+                <p>Nenhum lançamento com esses filtros.</p>
+                <button
+                  className="b-link"
+                  onClick={() => { setPeriodo(90); setFluxo("todos"); setBusca(null); }}
+                >
+                  Limpar filtros
+                </button>
+              </div>
+            ) : (
+              grupos.map((g, gi) => (
+                <div key={g.data} className="b-grupo">
+                  <p className="b-grupo-data">{dataLonga(g.data)}</p>
+                  <p className="b-grupo-saldo">
+                    Saldo do dia:{" "}
+                    {oculto ? <span className="b-oculto b-oculto-p" /> : `R$ ${brl(g.saldoDia)}`}
+                  </p>
+                  {g.itens.map((t) => (
+                    <Linha key={t.id} t={t} oculto={oculto} aoAbrir={setRecibo} />
+                  ))}
+                  {gi === 0 && opiniao && (
+                    <button
+                      className="b-opiniao"
+                      onClick={() => { setOpiniao(false); avisar("Obrigado. Sua opinião ajuda a melhorar o extrato."); }}
+                    >
+                      <span className="b-id">iD</span>
+                      <span className="b-opiniao-txt">
+                        <span className="b-opiniao-tit">Compartilhe a sua opinião</span>
+                        <span className="b-opiniao-sub">O extrato está atendendo as suas expectativas?</span>
+                      </span>
+                      <Icone nome="seta" tam={18} larg={1.4} />
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
+          </>
+        ) : (
+          <div className="b-futuros">
+            <p className="b-nota">Agendamentos e débitos programados dos próximos 30 dias.</p>
+            {gruposFuturos.map((g) => (
+              <div key={g.data} className="b-grupo">
+                <p className="b-grupo-data">{dataLonga(g.data)}</p>
+                {g.itens.map((t) => (
+                  <Linha key={t.id} t={t} oculto={oculto} />
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Pix                                                                */
+/* ------------------------------------------------------------------ */
+
+function Pix({ setTela, saldo, oculto, registrar, avisar, setRecibo }) {
+  const [passo, setPasso] = useState("quem");
+  const [destino, setDestino] = useState(null);
+  const [chave, setChave] = useState("");
+  const [digitos, setDigitos] = useState("");
+  const [erro, setErro] = useState("");
+
+  const valor = Number(digitos || 0) / 100;
+
+  const voltar = () => {
+    if (passo === "quem") setTela("extrato");
+    else if (passo === "valor") setPasso("quem");
+    else setPasso("valor");
+  };
+
+  const irParaValor = (d) => {
+    setDestino(d);
+    setDigitos("");
+    setErro("");
+    setPasso("valor");
+  };
+
+  const revisar = () => {
+    if (valor <= 0) return setErro("Digite um valor maior que zero.");
+    if (valor > saldo) return setErro(`Saldo insuficiente. Você tem R$ ${brl(saldo)} disponíveis.`);
+    setErro("");
+    setPasso("revisao");
+  };
+
+  const enviar = () => {
+    const t = {
+      data: HOJE,
+      tipo: "saida",
+      kind: "Pix enviado",
+      nome: destino.nome,
+      valor,
+      cat: "Transferências",
+    };
+    registrar(t);
+    setTela("extrato");
+    setRecibo({ ...t, id: "novo", agora: true });
+    avisar("Pix enviado.");
+  };
+
+  return (
+    <>
+      <Cabecalho titulo="Pix e transferir" aoVoltar={voltar} />
+
+      {passo === "quem" && (
+        <div className="b-corpo">
+          <p className="b-saldo-rot">Disponível para transferir</p>
+          <p className="b-saldo-med">
+            {oculto ? <span className="b-oculto b-oculto-g" /> : <>R$ {brl(saldo)}</>}
+          </p>
+
+          <p className="b-rot-secao">Quem vai receber</p>
+          <div className="b-cartao-branco">
+            {CONTATOS.map((c, i) => (
+              <button key={c.chave} className={"b-contato " + (i ? "b-borda-top" : "")} onClick={() => irParaValor(c)}>
+                <span className="b-avatar">{c.nome.slice(0, 1)}</span>
+                <span className="b-contato-txt">
+                  <span className="b-contato-nome">{c.nome}</span>
+                  <span className="b-contato-sub">{c.banco} · {c.chave}</span>
+                </span>
+                <Icone nome="seta" tam={18} larg={1.4} />
+              </button>
+            ))}
+          </div>
+
+          <p className="b-rot-secao">Ou use uma chave</p>
+          <div className="b-cartao-branco b-pad">
+            <input
+              className="b-campo"
+              value={chave}
+              onChange={(e) => setChave(e.target.value)}
+              placeholder="CPF, celular, e-mail ou chave aleatória"
+            />
+            <button
+              className="b-btn"
+              disabled={chave.trim().length < 5}
+              onClick={() => irParaValor({ nome: chave.trim(), banco: "Chave Pix", chave: chave.trim() })}
+            >
+              Continuar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {passo === "valor" && (
+        <div className="b-corpo b-corpo-alto">
+          <p className="b-rot-secao b-sem-topo">Transferir para</p>
+          <p className="b-destino">{destino.nome}</p>
+          <p className="b-destino-sub">{destino.banco}</p>
+
+          <div className="b-valor-cx">
+            <span className="b-valor-moeda">R$</span>
+            <span className={"b-valor-num " + (valor > 0 ? "" : "b-valor-zero")}>{brl(valor)}</span>
+          </div>
+          {erro ? (
+            <p className="b-erro">{erro}</p>
+          ) : (
+            <p className="b-nota b-centro">Saldo depois da transferência: R$ {brl(Math.max(saldo - valor, 0))}</p>
+          )}
+
+          <Teclado
+            onDigito={(d) => setDigitos((x) => (x + d).slice(0, 9))}
+            onApagar={() => setDigitos((x) => x.slice(0, -1))}
+          />
+          <button className="b-btn b-btn-fixo" onClick={revisar}>Revisar transferência</button>
+        </div>
+      )}
+
+      {passo === "revisao" && (
+        <div className="b-corpo">
+          <p className="b-rot-secao b-sem-topo">Confira antes de enviar</p>
+          <div className="b-cartao-branco b-pad">
+            <Campo r="Valor" v={`R$ ${brl(valor)}`} forte />
+            <Campo r="Para" v={destino.nome} />
+            <Campo r="Instituição" v={destino.banco} />
+            <Campo r="Chave" v={destino.chave} />
+            <Campo r="Quando" v={`Hoje, ${dataCurta(HOJE)}`} />
+            <Campo r="Saldo após" v={`R$ ${brl(saldo - valor)}`} />
+          </div>
+          <button className="b-btn" onClick={enviar}>Enviar Pix</button>
+          <button className="b-btn-vazio" onClick={() => setPasso("valor")}>Mudar valor</button>
+        </div>
+      )}
+    </>
+  );
+}
+
+function Campo({ r, v, forte }) {
+  return (
+    <div className="b-campo-linha">
+      <span className="b-campo-r">{r}</span>
+      <span className={"b-campo-v " + (forte ? "b-campo-forte" : "")}>{v}</span>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Cartões                                                            */
+/* ------------------------------------------------------------------ */
+
+function Cartoes({ setTela, oculto, avisar }) {
+  const fatura = FATURA.reduce((a, c) => a + c.valor, 0);
+  const limite = 4000;
+  const disponivel = limite - fatura;
+  const pct = Math.round((fatura / limite) * 100);
+
+  return (
+    <>
+      <Cabecalho titulo="Cartões" aoVoltar={() => setTela("extrato")} />
+      <div className="b-corpo">
+        <div className="b-cartao-fisico">
+          <span className="b-cartao-marca">Click Visa Platinum</span>
+          <span className="b-cartao-num">•••• •••• •••• 4417</span>
+          <span className="b-cartao-rod">
+            <span>Vencimento dia 15</span>
+            <span className="b-cartao-band" />
+          </span>
+        </div>
+
+        <div className="b-cartao-branco b-pad">
+          <p className="b-rot-min">Fatura aberta</p>
+          <p className="b-saldo-med">
+            {oculto ? <span className="b-oculto b-oculto-g" /> : <>R$ {brl(fatura)}</>}
+          </p>
+          <div className="b-barra">
+            <div className="b-barra-preenche" style={{ width: pct + "%" }} />
+          </div>
+          <p className="b-nota">
+            R$ {brl(disponivel)} de limite disponível · usou {pct}% de R$ {brl(limite)}
+          </p>
+          <button className="b-btn" onClick={() => avisar("A fatura vence em 15/09. Pagamento indisponível no protótipo.")}>
+            Pagar fatura
+          </button>
+        </div>
+
+        <p className="b-rot-secao">Compras desta fatura</p>
+        <div className="b-cartao-branco">
+          {FATURA.map((c, i) => (
+            <div key={c.id} className={"b-fatura-linha " + (i ? "b-borda-top" : "")}>
+              <span className="b-fatura-txt">
+                <span className="b-lanc-nome b-forte">{c.nome}</span>
+                <span className="b-nota">{dataCurta(c.data)}</span>
+              </span>
+              <span className="b-forte">
+                {oculto ? <span className="b-oculto b-oculto-p" /> : `R$ ${brl(c.valor)}`}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Combina aqui                                                       */
+/* ------------------------------------------------------------------ */
+
+function Combina({ setTela, registrar, avisar }) {
+  const [valor, setValor] = useState(1500);
+  const [parcelas, setParcelas] = useState(12);
+  const taxa = 0.0199;
+  const parcela = (valor * taxa) / (1 - Math.pow(1 + taxa, -parcelas));
+  const total = parcela * parcelas;
+
+  const contratar = () => {
+    registrar({
+      data: HOJE,
+      tipo: "entrada",
+      kind: "Empréstimo creditado",
+      nome: `${parcelas}x de R$ ${brl(parcela)}`,
+      valor,
+      cat: "Renda",
+    });
+    setTela("extrato");
+    avisar("Crédito na conta. Primeira parcela em 10/10.");
+  };
+
+  return (
+    <>
+      <Cabecalho titulo="Combina aqui" aoVoltar={() => setTela("extrato")} />
+      <div className="b-corpo">
+        <div className="b-destaque">
+          <p className="b-destaque-r">Crédito pré-aprovado até</p>
+          <p className="b-destaque-v">R$ 3.500,00</p>
+          <p className="b-destaque-n">Taxa de 1,99% ao mês. Você escolhe o valor e o prazo.</p>
+        </div>
+
+        <div className="b-cartao-branco b-pad">
+          <p className="b-rot-min">Quanto você precisa</p>
+          <p className="b-saldo-med">R$ {brl(valor)}</p>
+          <input
+            className="b-slider"
+            type="range"
+            min={500}
+            max={3500}
+            step={100}
+            value={valor}
+            onChange={(e) => setValor(Number(e.target.value))}
+            aria-label="Valor do empréstimo"
+          />
+          <div className="b-slider-lim">
+            <span>R$ 500</span>
+            <span>R$ 3.500</span>
+          </div>
+
+          <p className="b-rot-min b-mt">Em quantas vezes</p>
+          <div className="b-parcelas">
+            {[6, 12, 18, 24].map((p) => (
+              <button
+                key={p}
+                className={"b-parcela " + (p === parcelas ? "b-parcela-on" : "")}
+                onClick={() => setParcelas(p)}
+              >
+                {p}x
+              </button>
+            ))}
+          </div>
+
+          <div className="b-resumo">
+            <Campo r="Parcela mensal" v={`R$ ${brl(parcela)}`} forte />
+            <Campo r="Total a pagar" v={`R$ ${brl(total)}`} />
+            <Campo r="Primeira parcela" v="10/10/2026" />
+          </div>
+
+          <button className="b-btn" onClick={contratar}>Contratar e receber agora</button>
+          <p className="b-nota b-centro">Simulação. Nada é contratado de verdade.</p>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Controle de gastos                                                 */
+/* ------------------------------------------------------------------ */
+
+function Gastos({ setTela, lancs, oculto }) {
+  const doMes = lancs.filter((t) => t.data.startsWith("2026-09"));
+  const saidas = doMes.filter((t) => t.tipo === "saida");
+  const entradas = doMes.filter((t) => t.tipo === "entrada");
+  const totalSaidas = saidas.reduce((a, t) => a + t.valor, 0);
+  const totalEntradas = entradas.reduce((a, t) => a + t.valor, 0);
+
+  const cats = useMemo(() => {
+    const m = {};
+    saidas.forEach((t) => {
+      m[t.cat] = (m[t.cat] || 0) + t.valor;
+    });
+    return Object.entries(m).sort((a, b) => b[1] - a[1]);
+  }, [lancs]);
+
+  const maior = cats.length ? cats[0][1] : 1;
+
+  return (
+    <>
+      <Cabecalho titulo="Controle de Gastos" aoVoltar={() => setTela("extrato")} />
+      <div className="b-corpo">
+        <p className="b-rot-min">Saídas em setembro</p>
+        <p className="b-saldo-num">
+          {oculto ? <span className="b-oculto b-oculto-g" /> : <>R$ {brl(totalSaidas)}</>}
+        </p>
+        <p className="b-nota">
+          Entradas no mesmo período: R$ {brl(totalEntradas)} · sobra de R$ {brl(totalEntradas - totalSaidas)}
+        </p>
+
+        <div className="b-cartao-branco b-pad b-mt">
+          {cats.map(([nome, v]) => (
+            <div key={nome} className="b-cat">
+              <div className="b-cat-topo">
+                <span className="b-cat-nome">
+                  <span className="b-ponto" style={{ background: CORES_CAT[nome] || "#9A9A9A" }} />
+                  {nome}
+                </span>
+                <span className="b-cat-val">
+                  {oculto ? <span className="b-oculto b-oculto-p" /> : `R$ ${brl(v)}`}
+                </span>
+              </div>
+              <div className="b-barra">
+                <div
+                  className="b-barra-preenche"
+                  style={{ width: (v / maior) * 100 + "%", background: CORES_CAT[nome] || "#9A9A9A" }}
+                />
+              </div>
+              <span className="b-nota">{Math.round((v / totalSaidas) * 100)}% das saídas</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="b-rot-secao">Maiores saídas do mês</p>
+        <div className="b-cartao-branco">
+          {[...saidas].sort((a, b) => b.valor - a.valor).slice(0, 4).map((t, i) => (
+            <div key={t.id} className={"b-fatura-linha " + (i ? "b-borda-top" : "")}>
+              <span className="b-fatura-txt">
+                <span className="b-lanc-nome b-forte">{t.nome}</span>
+                <span className="b-nota">{t.cat} · {dataCurta(t.data)}</span>
+              </span>
+              <span className="b-forte">
+                {oculto ? <span className="b-oculto b-oculto-p" /> : `R$ ${brl(t.valor)}`}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Cofrinhos                                                          */
+/* ------------------------------------------------------------------ */
+
+function Cofrinhos({ setTela, cofres, setCofres, saldo, setSaldo, oculto, registrar, avisar }) {
+  const [aberto, setAberto] = useState(null); // {id, modo}
+  const [txt, setTxt] = useState("");
+
+  const cofre = cofres.find((c) => c.id === (aberto && aberto.id));
+  const v = Number(txt.replace(/\D/g, "") || 0) / 100;
+
+  const confirmar = () => {
+    if (v <= 0) return;
+    if (aberto.modo === "guardar") {
+      if (v > saldo) return avisar(`Saldo insuficiente. Você tem R$ ${brl(saldo)}.`);
+      setCofres((cs) => cs.map((c) => (c.id === cofre.id ? { ...c, saldo: c.saldo + v } : c)));
+      registrar({ data: HOJE, tipo: "saida", kind: "Guardado no cofrinho", nome: cofre.nome, valor: v, cat: "Outros" });
+      avisar("Guardado no cofrinho.");
+    } else {
+      if (v > cofre.saldo) return avisar(`Este cofrinho tem R$ ${brl(cofre.saldo)}.`);
+      setCofres((cs) => cs.map((c) => (c.id === cofre.id ? { ...c, saldo: c.saldo - v } : c)));
+      registrar({ data: HOJE, tipo: "entrada", kind: "Resgate do cofrinho", nome: cofre.nome, valor: v, cat: "Outros" });
+      avisar("Resgatado para a conta.");
+    }
+    setAberto(null);
+    setTxt("");
+  };
+
+  const total = cofres.reduce((a, c) => a + c.saldo, 0);
+
+  return (
+    <>
+      <Cabecalho titulo="Cofrinhos" aoVoltar={() => setTela("extrato")} />
+      <div className="b-corpo">
+        <p className="b-rot-min">Total guardado</p>
+        <p className="b-saldo-num">
+          {oculto ? <span className="b-oculto b-oculto-g" /> : <>R$ {brl(total)}</>}
+        </p>
+        <p className="b-nota">Rende 100% do CDI e você resgata quando quiser.</p>
+
+        {cofres.map((c) => {
+          const pct = Math.min(Math.round((c.saldo / c.meta) * 100), 100);
+          return (
+            <div key={c.id} className="b-cartao-branco b-pad b-mt">
+              <div className="b-cat-topo">
+                <span className="b-cat-nome">
+                  <span className="b-ponto" style={{ background: c.cor }} />
+                  {c.nome}
+                </span>
+                <span className="b-forte">
+                  {oculto ? <span className="b-oculto b-oculto-p" /> : `R$ ${brl(c.saldo)}`}
+                </span>
+              </div>
+              <div className="b-barra">
+                <div className="b-barra-preenche" style={{ width: pct + "%", background: c.cor }} />
+              </div>
+              <p className="b-nota">{pct}% da meta de R$ {brl(c.meta)}</p>
+              <div className="b-duplo">
+                <button className="b-btn b-btn-mini" onClick={() => { setAberto({ id: c.id, modo: "guardar" }); setTxt(""); }}>
+                  <Icone nome="mais" tam={18} larg={2} /> Guardar
+                </button>
+                <button className="b-btn-vazio b-btn-mini" onClick={() => { setAberto({ id: c.id, modo: "resgatar" }); setTxt(""); }}>
+                  <Icone nome="menos" tam={18} larg={2} /> Resgatar
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {cofre && (
+        <div className="b-modal" onClick={() => setAberto(null)}>
+          <div className="b-folha" onClick={(e) => e.stopPropagation()}>
+            <h2 className="b-folha-tit">
+              {aberto.modo === "guardar" ? "Guardar em" : "Resgatar de"} {cofre.nome}
+            </h2>
+            <p className="b-folha-txt">
+              {aberto.modo === "guardar"
+                ? `Disponível na conta: R$ ${brl(saldo)}`
+                : `Guardado neste cofrinho: R$ ${brl(cofre.saldo)}`}
+            </p>
+            <div className="b-valor-cx b-valor-cx-mini">
+              <span className="b-valor-moeda">R$</span>
+              <span className={"b-valor-num " + (v > 0 ? "" : "b-valor-zero")}>{brl(v)}</span>
+            </div>
+            <div className="b-rapidos">
+              {[5000, 10000, 25000].map((c) => (
+                <button key={c} className="b-rapido" onClick={() => setTxt(String(c))}>
+                  R$ {brl(c / 100)}
+                </button>
+              ))}
+            </div>
+            <Teclado
+              onDigito={(d) => setTxt((x) => (x + d).slice(0, 8))}
+              onApagar={() => setTxt((x) => x.slice(0, -1))}
+            />
+            <button className="b-btn" onClick={confirmar}>
+              {aberto.modo === "guardar" ? "Guardar" : "Resgatar"}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Comprovantes + recibo                                              */
+/* ------------------------------------------------------------------ */
+
+function Comprovantes({ setTela, lancs, oculto, setRecibo }) {
+  const [filtro, setFiltro] = useState("todos");
+  const lista = lancs.filter(
+    (t) => t.data >= INICIO && (filtro === "todos" ? true : t.tipo === filtro)
+  );
+
+  return (
+    <>
+      <Cabecalho titulo="Comprovantes" aoVoltar={() => setTela("extrato")} />
+      <div className="b-corpo">
+        <p className="b-nota b-sem-topo">Toque em um lançamento para ver o comprovante.</p>
+        <div className="b-filtros b-filtros-livres">
+          <Filtro
+            rotulo="Todos"
+            valor={filtro}
+            aoMudar={setFiltro}
+            opcoes={[
+              { v: "todos", r: "Todos" },
+              { v: "entrada", r: "Recebidos" },
+              { v: "saida", r: "Enviados" },
+            ]}
+          />
+        </div>
+        <div className="b-cartao-branco">
+          {lista.map((t, i) => (
+            <div key={t.id} className={i ? "b-borda-top" : ""}>
+              <Linha t={t} oculto={oculto} aoAbrir={setRecibo} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Recibo({ t, oculto, aoFechar, avisar }) {
+  const id = useMemo(
+    () => "E" + Math.abs(Math.floor(Math.random() * 9e11) + 1e11).toString(),
+    [t]
+  );
+  return (
+    <div className="b-modal" onClick={aoFechar}>
+      <div className="b-folha b-folha-recibo" onClick={(e) => e.stopPropagation()}>
+        <span className="b-selo">
+          <Icone nome={t.tipo === "entrada" ? "entrada" : "check"} tam={26} larg={1.8} />
+        </span>
+        <h2 className="b-recibo-tit">{t.kind}</h2>
+        <p className={"b-recibo-val " + (t.tipo === "entrada" ? "b-verde-txt" : "")}>
+          {oculto ? <span className="b-oculto b-oculto-g" /> : <>R$ {brl(t.valor)}</>}
+        </p>
+        <div className="b-recibo-campos">
+          <Campo r={t.tipo === "entrada" ? "De" : "Para"} v={t.nome} />
+          <Campo r="Data" v={dataCurta(t.data)} />
+          <Campo r="Conta" v="Ag 0341 · C/C 08471-2" />
+          <Campo r="Identificador" v={id} />
+        </div>
+        <div className="b-duplo">
+          <button className="b-btn b-btn-mini" onClick={() => avisar("Comprovante copiado.")}>
+            <Icone nome="copiar" tam={18} larg={1.6} /> Copiar
+          </button>
+          <button className="b-btn-vazio b-btn-mini" onClick={() => avisar("Escolha um app para compartilhar.")}>
+            <Icone nome="compartilhar" tam={18} larg={1.6} /> Compartilhar
+          </button>
+        </div>
+        <button className="b-btn-texto" onClick={aoFechar}>Fechar</button>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Estilo                                                             */
+/* ------------------------------------------------------------------ */
+
+const CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
+
+.b-fundo{
+  --cinza:#EFEFEF; --branco:#fff; --tinta:#2B2B2B; --tinta-fraca:#6A6A6A;
+  --azul:#26268F; --laranja:#EC7000; --verde:#0F8A55; --linha:#E4E4E4;
+  font-family:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
+  color:var(--tinta);
+  background:#D8D8DA;
+  min-height:100vh;
+  display:flex; align-items:flex-start; justify-content:center;
+  padding:24px 16px;
+  -webkit-font-smoothing:antialiased;
+}
+.b-tela{
+  width:100%; max-width:420px; background:var(--cinza);
+  border-radius:34px; overflow:hidden; position:relative;
+  min-height:820px; box-shadow:0 18px 50px rgba(0,0,0,.22);
+  display:flex; flex-direction:column;
+}
+@media (max-width:520px){
+  .b-fundo{padding:0}
+  .b-tela{border-radius:0; min-height:100vh; box-shadow:none}
+}
+.b-fundo *{box-sizing:border-box}
+.b-fundo button{font-family:inherit; cursor:pointer; border:0; background:none; color:inherit}
+.b-fundo button:focus-visible,.b-fundo input:focus-visible{outline:2px solid var(--azul); outline-offset:2px; border-radius:8px}
+
+/* status bar */
+.b-status{display:flex; justify-content:space-between; align-items:center;
+  padding:14px 26px 2px; font-size:14px; font-weight:600}
+.b-status-dir{display:flex; align-items:center; gap:8px}
+.b-sinal{width:17px; height:11px; border-radius:2px;
+  background:linear-gradient(to right,var(--tinta) 0 3px,transparent 3px 5px,var(--tinta) 5px 8px,transparent 8px 10px,var(--tinta) 10px 13px,transparent 13px 15px,var(--tinta) 15px 17px)}
+.b-bateria{font-size:11px; font-weight:700; color:#fff; background:var(--tinta);
+  border-radius:5px; padding:1px 5px}
+
+/* topo */
+.b-topo{display:flex; align-items:center; gap:8px; padding:14px 16px 6px}
+.b-topo-titulo{font-size:20px; font-weight:600; margin:0; flex:1}
+.b-topo-vazio{width:8px}
+.b-topo-dir{display:flex; gap:2px}
+.b-icone-btn{padding:8px; border-radius:50%; color:var(--tinta)}
+.b-icone-btn:hover{background:rgba(0,0,0,.05)}
+
+/* saldo */
+.b-saldo-bloco{padding:22px 24px 20px}
+.b-saldo-rot{margin:0; font-size:15px; color:var(--tinta-fraca)}
+.b-saldo-num{margin:4px 0 0; font-size:31px; font-weight:600; letter-spacing:-.4px}
+.b-saldo-med{margin:2px 0 0; font-size:25px; font-weight:600}
+
+.b-oculto{display:inline-block; height:14px; width:96px; border-radius:7px;
+  background:#CFCFCF; vertical-align:middle}
+.b-oculto-g{height:22px; width:150px; border-radius:11px}
+.b-oculto-p{height:11px; width:62px; border-radius:6px}
+
+/* linhas de menu */
+.b-linha-menu{display:flex; align-items:center; gap:14px; width:100%;
+  padding:14px 24px; text-align:left}
+.b-linha-menu:hover{background:rgba(0,0,0,.03)}
+.b-linha-menu-r{font-size:16px; flex:1}
+.b-linha-menu-a{font-size:15px; color:var(--tinta-fraca)}
+.b-divisor{height:1px; background:var(--linha); margin:0 24px}
+
+/* atalhos */
+.b-atalhos{display:flex; gap:10px; padding:20px 16px 26px; overflow-x:auto;
+  scrollbar-width:none}
+.b-atalhos::-webkit-scrollbar{display:none}
+.b-atalho{flex:0 0 auto; width:72px; text-align:center}
+.b-atalho-cx{display:flex; align-items:center; justify-content:center;
+  width:72px; height:72px; background:var(--branco); border-radius:14px;
+  margin-bottom:8px; transition:transform .12s ease}
+.b-atalho:hover .b-atalho-cx{transform:translateY(-2px)}
+.b-atalho:active .b-atalho-cx{transform:scale(.96)}
+.b-atalho-r{font-size:13.5px; line-height:1.25; display:block}
+
+/* folha de lançamentos */
+.b-folha-lanc{background:var(--branco); border-radius:26px 26px 0 0;
+  padding:24px 0 40px; flex:1}
+.b-lanc-topo{display:flex; align-items:center; padding:0 20px 4px}
+.b-secao{font-size:22px; font-weight:700; margin:0; flex:1}
+.b-lanc-acoes{display:flex; gap:2px}
+
+.b-abas{display:flex; gap:26px; padding:14px 22px 0;
+  border-bottom:1px solid var(--linha); margin-bottom:16px}
+.b-aba{font-size:16px; padding:0 0 10px; color:var(--tinta-fraca);
+  border-bottom:3px solid transparent; margin-bottom:-1px}
+.b-aba-on{color:var(--tinta); font-weight:600; border-color:var(--laranja)}
+
+.b-busca{width:calc(100% - 40px); margin:0 20px 12px; padding:11px 14px;
+  border:1px solid var(--linha); border-radius:10px; font-size:15px;
+  font-family:inherit; background:#FAFAFA}
+
+.b-filtros{display:flex; gap:8px; padding:0 20px 8px; overflow-x:auto;
+  scrollbar-width:none}
+.b-filtros::-webkit-scrollbar{display:none}
+.b-filtros-livres{padding-left:0; padding-right:0}
+.b-filtro-wrap{position:relative; flex:0 0 auto}
+.b-chip{display:flex; align-items:center; gap:6px; padding:9px 14px;
+  border:1.5px solid var(--azul); border-radius:10px; color:var(--azul);
+  font-size:14.5px; white-space:nowrap; background:var(--branco)}
+.b-chip-on{background:var(--azul); color:var(--branco)}
+.b-pop{position:absolute; top:calc(100% + 6px); left:0; z-index:20;
+  background:var(--branco); border-radius:12px; padding:6px;
+  box-shadow:0 10px 28px rgba(0,0,0,.16); min-width:180px}
+.b-pop-item{display:flex; align-items:center; justify-content:space-between;
+  gap:12px; width:100%; padding:10px 12px; font-size:15px; text-align:left;
+  border-radius:8px; color:var(--tinta)}
+.b-pop-item:hover{background:#F4F4F4}
+.b-pop-item-on{color:var(--azul); font-weight:600}
+
+/* lançamentos */
+.b-grupo{padding-top:14px}
+.b-grupo-data{margin:0; padding:0 20px; font-size:16px; font-weight:700}
+.b-grupo-saldo{margin:2px 0 8px; padding:0 20px; font-size:14.5px; color:var(--tinta-fraca)}
+.b-lanc{display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+  padding:12px 20px}
+.b-lanc:hover{background:#FAFAFA}
+.b-lanc-ic{color:var(--tinta); flex:0 0 auto}
+.b-verde{color:var(--verde)}
+.b-verde-txt{color:var(--verde)}
+.b-lanc-txt{flex:1; min-width:0}
+.b-lanc-kind{display:block; font-size:14px; color:var(--tinta-fraca)}
+.b-lanc-nome{display:block; font-size:16px; font-weight:600; line-height:1.3;
+  overflow-wrap:anywhere}
+.b-lanc-val{display:block; font-size:15px; margin-top:2px}
+.b-lanc-seta{color:#9A9A9A; flex:0 0 auto}
+
+.b-opiniao{display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+  margin:14px 20px 4px; width:calc(100% - 40px); padding:16px 14px;
+  background:#F2F2F2; border-radius:14px}
+.b-opiniao:hover{background:#EBEBEB}
+.b-id{font-size:22px; font-weight:700; color:var(--laranja); flex:0 0 auto;
+  letter-spacing:-1px}
+.b-opiniao-txt{flex:1; min-width:0}
+.b-opiniao-tit{display:block; font-size:15.5px; font-weight:700}
+.b-opiniao-sub{display:block; font-size:14px; color:#4A4A4A; line-height:1.35; margin-top:2px}
+
+.b-vazio{padding:36px 20px; text-align:center; color:var(--tinta-fraca)}
+.b-link{color:var(--azul); font-weight:600; font-size:15px; margin-top:6px}
+.b-futuros{padding-top:4px}
+.b-nota{font-size:13.5px; color:var(--tinta-fraca); margin:6px 0 0; padding:0 20px}
+.b-centro{text-align:center}
+
+/* telas internas */
+.b-corpo{padding:8px 20px 40px; flex:1; display:flex; flex-direction:column}
+.b-corpo-alto{padding-bottom:24px}
+.b-rot-secao{font-size:15px; color:var(--tinta-fraca); margin:26px 0 10px}
+.b-sem-topo{margin-top:4px; padding:0}
+.b-rot-min{font-size:14px; color:var(--tinta-fraca); margin:0}
+.b-mt{margin-top:18px}
+.b-forte{font-weight:600}
+.b-cartao-branco{background:var(--branco); border-radius:16px; overflow:hidden}
+.b-pad{padding:18px}
+.b-borda-top{border-top:1px solid var(--linha)}
+
+.b-contato{display:flex; align-items:center; gap:12px; width:100%;
+  padding:14px 16px; text-align:left}
+.b-contato:hover{background:#FAFAFA}
+.b-avatar{width:40px; height:40px; border-radius:50%; background:#E8E8F5;
+  color:var(--azul); font-weight:700; display:flex; align-items:center;
+  justify-content:center; flex:0 0 auto}
+.b-contato-txt{flex:1; min-width:0}
+.b-contato-nome{display:block; font-size:15.5px; font-weight:600; line-height:1.3}
+.b-contato-sub{display:block; font-size:13px; color:var(--tinta-fraca); margin-top:2px}
+
+.b-campo{width:100%; padding:13px 14px; border:1px solid var(--linha);
+  border-radius:10px; font-size:15px; font-family:inherit; margin-bottom:14px}
+.b-btn{display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; padding:15px; background:var(--azul); color:var(--branco);
+  border-radius:12px; font-size:16px; font-weight:600; margin-top:14px}
+.b-btn:hover{filter:brightness(1.12)}
+.b-btn:disabled{background:#C8C8D8; cursor:not-allowed}
+.b-btn-vazio{display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; padding:14px; border:1.5px solid var(--azul); color:var(--azul);
+  border-radius:12px; font-size:16px; font-weight:600; margin-top:10px}
+.b-btn-texto{width:100%; padding:12px; color:var(--tinta-fraca); font-size:15px; margin-top:6px}
+.b-btn-mini{font-size:14.5px; padding:12px; margin-top:0}
+.b-duplo{display:flex; gap:10px; margin-top:16px}
+.b-duplo > *{flex:1}
+
+.b-destino{font-size:19px; font-weight:600; margin:2px 0 0}
+.b-destino-sub{font-size:14px; color:var(--tinta-fraca); margin:2px 0 0}
+.b-valor-cx{display:flex; align-items:baseline; justify-content:center; gap:6px;
+  padding:26px 0 6px}
+.b-valor-cx-mini{padding:14px 0 4px}
+.b-valor-moeda{font-size:18px; color:var(--tinta-fraca)}
+.b-valor-num{font-size:38px; font-weight:600; letter-spacing:-.6px}
+.b-valor-zero{color:#BDBDBD}
+.b-erro{color:#C4322B; font-size:14px; text-align:center; margin:4px 0 0}
+
+.b-teclado{display:grid; grid-template-columns:repeat(3,1fr); gap:4px;
+  margin:18px 0 4px}
+.b-tecla{display:flex; align-items:center; justify-content:center; height:58px;
+  font-size:23px; font-weight:500; border-radius:12px}
+.b-tecla:hover{background:rgba(0,0,0,.05)}
+.b-tecla:active{background:rgba(0,0,0,.1)}
+.b-btn-fixo{margin-top:auto}
+
+.b-campo-linha{display:flex; justify-content:space-between; gap:16px;
+  padding:11px 0; border-bottom:1px solid var(--linha)}
+.b-campo-linha:last-child{border-bottom:0}
+.b-campo-r{font-size:14.5px; color:var(--tinta-fraca); flex:0 0 auto}
+.b-campo-v{font-size:15px; font-weight:500; text-align:right; overflow-wrap:anywhere}
+.b-campo-forte{font-size:19px; font-weight:700}
+
+/* cartão */
+.b-cartao-fisico{display:flex; flex-direction:column; justify-content:space-between;
+  height:168px; padding:20px; border-radius:16px; color:#fff;
+  background:linear-gradient(135deg,#1B1B6E 0%,#33339E 60%,#4A2A8C 100%)}
+.b-cartao-marca{font-size:14px; opacity:.85}
+.b-cartao-num{font-size:20px; letter-spacing:2px; font-weight:500}
+.b-cartao-rod{display:flex; justify-content:space-between; align-items:center;
+  font-size:13px; opacity:.85}
+.b-cartao-band{width:38px; height:12px; border-radius:2px; background:var(--laranja)}
+.b-barra{height:8px; border-radius:4px; background:#EDEDED; overflow:hidden; margin:12px 0 6px}
+.b-barra-preenche{height:100%; border-radius:4px; background:var(--azul)}
+.b-fatura-linha{display:flex; align-items:center; justify-content:space-between;
+  gap:14px; padding:14px 16px}
+.b-fatura-txt{min-width:0}
+
+/* combina */
+.b-destaque{background:linear-gradient(120deg,#26268F,#4A3AAE); color:#fff;
+  border-radius:16px; padding:20px}
+.b-destaque-r{margin:0; font-size:14px; opacity:.85}
+.b-destaque-v{margin:4px 0 0; font-size:29px; font-weight:700}
+.b-destaque-n{margin:8px 0 0; font-size:13.5px; opacity:.85; line-height:1.4}
+.b-slider{width:100%; margin:14px 0 4px; accent-color:var(--azul)}
+.b-slider-lim{display:flex; justify-content:space-between; font-size:12.5px;
+  color:var(--tinta-fraca)}
+.b-parcelas{display:flex; gap:8px; margin-top:10px}
+.b-parcela{flex:1; padding:12px 0; border:1.5px solid var(--linha);
+  border-radius:10px; font-size:15px; font-weight:600; color:var(--tinta-fraca)}
+.b-parcela-on{border-color:var(--azul); color:var(--azul); background:#F2F2FA}
+.b-resumo{margin-top:18px; border-top:1px solid var(--linha); padding-top:4px}
+
+/* gastos */
+.b-cat{padding:12px 0; border-bottom:1px solid var(--linha)}
+.b-cat:last-child{border-bottom:0}
+.b-cat-topo{display:flex; justify-content:space-between; align-items:center; gap:12px}
+.b-cat-nome{display:flex; align-items:center; gap:8px; font-size:15.5px; font-weight:600}
+.b-cat-val{font-size:15px; font-weight:600}
+.b-ponto{width:9px; height:9px; border-radius:50%; flex:0 0 auto}
+
+/* modais */
+.b-modal{position:absolute; inset:0; background:rgba(20,20,25,.45);
+  display:flex; align-items:flex-end; z-index:40; animation:bfade .18s ease}
+.b-folha{width:100%; background:var(--branco); border-radius:22px 22px 0 0;
+  padding:24px 20px 28px; max-height:92%; overflow-y:auto;
+  animation:bsobe .24s cubic-bezier(.2,.8,.3,1)}
+.b-folha-tit{font-size:19px; font-weight:700; margin:0 0 6px}
+.b-folha-txt{font-size:14.5px; color:var(--tinta-fraca); margin:0; line-height:1.5}
+.b-folha-recibo{text-align:center}
+.b-selo{display:inline-flex; align-items:center; justify-content:center;
+  width:52px; height:52px; border-radius:50%; background:#E9F5EF; color:var(--verde);
+  margin-bottom:10px}
+.b-recibo-tit{font-size:17px; font-weight:600; margin:0; color:var(--tinta-fraca)}
+.b-recibo-val{font-size:30px; font-weight:700; margin:4px 0 18px}
+.b-recibo-campos{text-align:left; background:#FAFAFA; border-radius:14px; padding:4px 16px}
+.b-rapidos{display:flex; gap:8px; margin-top:6px}
+.b-rapido{flex:1; padding:10px 0; border:1.5px solid var(--linha); border-radius:10px;
+  font-size:14px; font-weight:600; color:var(--azul)}
+.b-rapido:hover{border-color:var(--azul)}
+
+.b-toast{position:absolute; left:16px; right:16px; bottom:22px; z-index:60;
+  background:#1F1F24; color:#fff; padding:14px 16px; border-radius:12px;
+  font-size:14.5px; box-shadow:0 8px 24px rgba(0,0,0,.25);
+  animation:bsobe .22s ease}
+
+@keyframes bsobe{from{transform:translateY(18px); opacity:0} to{transform:none; opacity:1}}
+@keyframes bfade{from{opacity:0} to{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .b-fundo *,.b-fundo *::before{animation:none !important; transition:none !important}
+}
+`;
+
+ReactDOM.createRoot(document.getElementById("raiz")).render(<App />);
+</script>
+</body>
+</html>
