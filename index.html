@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Extrato — banco digital</title>
+<meta name="theme-color" content="#E8F2FE">
+<meta name="description" content="Protótipo de app de banco digital com navegação por deslize, feito em HTML, CSS e JavaScript puros.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue-bg:#E8F2FE;        /* fundo azul claro do topo */
+  --white:#FFFFFF;
+  --ink:#153A63;            /* navy dos títulos */
+  --ink-strong:#12314F;
+  --ink-2:#5C7488;          /* cinza dos rótulos */
+  --brand:#1877E8;          /* azul dos ícones e links */
+  --brand-soft:#CEE5FC;     /* fundo da pílula */
+  --circle-blue:#DEEBFB;
+  --circle-green:#E4F6E7;
+  --green:#1B7A3E;
+  --arrow-out:#7FA8D0;
+  --line:#DCE7F2;
+  --chip-line:#D3DFEC;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;background:var(--blue-bg);color:var(--ink);
+  font-family:Inter,-apple-system,"Segoe UI",system-ui,sans-serif;
+  font-size:16px;line-height:1.35;-webkit-font-smoothing:antialiased;overscroll-behavior:none;
+}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--brand);outline-offset:2px;border-radius:8px}
+
+.app{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--blue-bg);overflow:hidden}
+@media (min-width:520px){
+  body{display:grid;place-items:center;background:#0C1E31;padding:20px}
+  .app{position:relative;inset:auto;width:393px;height:min(852px,96vh);border-radius:44px;
+       box-shadow:0 30px 80px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.1)}
+}
+
+/* ---------- tela de detalhe do lançamento ---------- */
+.detail{
+  position:absolute;inset:0;z-index:40;background:var(--white);display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);
+  visibility:hidden;overflow-y:auto;scrollbar-width:none;
+}
+.detail::-webkit-scrollbar{display:none}
+.detail.on{transform:none;visibility:visible}
+.detail .dhead{background:#C9E5FB;padding:calc(env(safe-area-inset-top) + 16px) 16px 34px;flex:0 0 auto}
+.detail .dback{width:44px;height:44px;display:grid;place-items:center;color:var(--brand);border-radius:50%;margin-left:-6px}
+.detail .dback:active{background:rgba(255,255,255,.5)}
+.detail .logo{width:112px;height:112px;border-radius:50%;background:#C2EDF8;color:var(--brand);
+  display:grid;place-items:center;margin:2px auto 14px;font-size:38px;font-weight:700;letter-spacing:-1px}
+.detail .dname{text-align:center;font-size:19px;font-weight:700;color:#22303E;letter-spacing:-.2px;padding:0 10px;line-height:1.3}
+.detail .ddate{text-align:center;font-size:17px;color:#33414E;margin-top:6px}
+.detail .dbody{padding:26px 16px 0}
+.detail .dlabel{font-size:17px;color:#3B4A57}
+.detail .dvalue{font-size:37px;font-weight:700;letter-spacing:-1.2px;color:#1F2D3A;margin-top:4px}
+.detail .dlist{margin-top:28px}
+.detail .drow{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px 0;border-bottom:1px solid var(--line)}
+.detail .drow:last-child{border-bottom:0}
+.detail .drow .ic{width:60px;height:60px;border-radius:50%;background:#E4F0FD;color:var(--brand);display:grid;place-items:center;flex:0 0 auto}
+.detail .drow .dt{display:block;font-size:18px;font-weight:700;color:#1F3550;letter-spacing:-.2px}
+.detail .drow .ds{display:block;font-size:16px;color:#46596B;margin-top:2px}
+.detail .drow:active{background:#F5F9FF}
+
+/* ---------- cabeçalho fixo ao rolar ---------- */
+.stickybar{
+  position:absolute;top:0;left:0;right:0;z-index:20;background:var(--blue-bg);
+  padding:calc(env(safe-area-inset-top) + 14px) 0 16px;
+  opacity:0;transform:translateY(-10px);pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease;
+}
+.stickybar.on{opacity:1;transform:none;pointer-events:auto}
+.stickybar::after{content:"";position:absolute;left:0;right:0;top:100%;height:26px;
+  background:linear-gradient(rgba(232,242,254,.92),rgba(232,242,254,0))}
+.stickybar .hrow{display:flex;align-items:flex-start;padding:0 16px}
+.stickybar .back{color:var(--brand);margin:2px 10px 0 0;flex:0 0 auto}
+.stickybar .col{flex:1;min-width:0}
+.stickybar h2{margin:0;font-size:26px;font-weight:700;letter-spacing:-.6px;color:var(--ink-strong);line-height:1.1}
+.stickybar .sub{font-size:17px;color:#41607C;margin-top:4px}
+.stickybar .filters{padding:20px 16px 0}
+.stickybar .chip{background:transparent}
+.stickybar .chip.sq{background:rgba(255,255,255,.55)}
+.stickybar .ico{width:44px;height:44px;display:grid;place-items:center;color:var(--brand);border-radius:50%;flex:0 0 auto}
+.stickybar .ico:active{background:var(--brand-soft)}
+
+.viewport{flex:1;min-height:0;position:relative;overflow:hidden;touch-action:pan-y}
+.track{display:flex;height:100%;will-change:transform}
+.screen{flex:0 0 100%;height:100%;overflow-y:auto;overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+
+/* ---------- topo extrato ---------- */
+.head{display:flex;align-items:center;padding:calc(env(safe-area-inset-top) + 16px) 16px 0}
+.head .back{color:var(--brand);margin-right:10px}
+.head h1{flex:1;margin:0;font-size:28px;font-weight:700;letter-spacing:-.6px;color:var(--ink-strong)}
+.head .ico{width:44px;height:44px;display:grid;place-items:center;color:var(--brand);border-radius:50%}
+.head .ico:active{background:var(--brand-soft)}
+
+.balance{display:flex;align-items:flex-start;padding:22px 16px 0}
+.balance .col{flex:1;min-width:0}
+.balance .label{font-size:17px;color:#41607C;font-weight:400}
+.balance .amount{font-size:37px;font-weight:700;letter-spacing:-1.3px;color:var(--ink-strong);margin:2px 0 14px;line-height:1.05}
+.hidden-val{filter:blur(9px);user-select:none}
+.pill{display:inline-flex;align-items:center;gap:10px;background:var(--brand-soft);color:var(--brand);
+  font-weight:700;font-size:15.5px;padding:11px 16px;border-radius:999px;letter-spacing:-.1px}
+.pill:active{transform:scale(.98)}
+.dl{width:54px;height:54px;border-radius:16px;background:var(--brand-soft);display:grid;place-items:center;color:var(--brand);flex:0 0 auto;margin-top:26px}
+
+/* ---------- banner ---------- */
+.banner{position:relative;margin:20px 16px 0;border-radius:16px;overflow:hidden;color:#fff;
+  min-height:106px;display:flex;align-items:center;padding:0 18px;
+  background:linear-gradient(105deg,#2F6D8E 0%,#2A6584 45%,#1E5070 100%)}
+.banner h2{margin:0;font-size:18px;font-weight:700;letter-spacing:-.3px}
+.banner p{margin:2px 0 0;font-size:17px;color:#DCEBF3;font-weight:400}
+.banner .art{position:absolute;right:4px;bottom:-8px}
+.banner .go{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:42px;height:42px;
+  border-radius:50%;background:#10283A;display:grid;place-items:center;box-shadow:0 0 0 5px rgba(255,255,255,.16)}
+
+/* ---------- abas ---------- */
+.tabs{position:relative;display:flex;margin-top:22px;background:var(--blue-bg)}
+.tabs button{flex:1;padding:14px 0 16px;font-size:17px;font-weight:600;color:#5E7A93;letter-spacing:-.2px}
+.tabs button[aria-selected="true"]{color:var(--brand);font-weight:700}
+.tabs .rail{position:absolute;left:0;right:0;bottom:0;height:3px;background:#C6D8EA}
+.tabs .ink{position:absolute;bottom:0;left:0;width:50%;height:3px;background:var(--brand);
+  transition:transform .28s cubic-bezier(.22,1,.36,1)}
+
+.sheet{background:var(--white);min-height:100%}
+.inner-view{overflow:hidden}
+.inner-track{display:flex;will-change:transform}
+.inner-pane{flex:0 0 100%}
+
+/* ---------- filtros ---------- */
+.filters{display:flex;gap:11px;padding:20px 16px 0;overflow-x:auto;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;background:var(--white);
+  border:1.5px solid var(--chip-line);border-radius:999px;padding:0 18px;height:46px;
+  font-size:16px;font-weight:400;color:var(--ink-strong)}
+.chip.sq{width:46px;padding:0;justify-content:center;border-radius:14px;color:var(--brand)}
+.chip[aria-pressed="true"]{border-color:var(--brand);color:var(--brand);background:#F0F7FF;font-weight:600}
+
+/* ---------- somas ---------- */
+.sums{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:18px 16px 0}
+.sum{border:1.5px solid var(--chip-line);border-radius:14px;padding:14px 14px 16px}
+.sum .k{color:#5C7488;font-size:14.5px;margin-top:10px}
+.sum .v{font-size:19px;font-weight:700;letter-spacing:-.4px;margin-top:1px;color:var(--ink-strong)}
+.sum .v.in{color:var(--green)}
+
+/* ---------- lista ---------- */
+.day{padding:30px 16px 0}
+.day h3{margin:0 0 6px;font-size:19px;font-weight:700;letter-spacing:-.4px;color:var(--ink-strong)}
+.row{display:flex;gap:14px;align-items:center;width:100%;text-align:left;padding:16px 0;border-bottom:1px solid var(--line)}
+.day .row:last-child{border-bottom:0}
+.row .av{flex:0 0 auto;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+  background:var(--circle-blue);color:var(--brand)}
+.row .av.in{background:var(--circle-green);color:var(--green)}
+.row .av.sq{border-radius:18px;font-size:22px;font-weight:700;letter-spacing:-.8px}
+.row .body{flex:1;min-width:0}
+.row .t{display:block;font-size:17px;font-weight:700;letter-spacing:-.3px;color:var(--ink);line-height:1.25}
+.row .s{display:block;font-size:15px;color:#5C7488;margin-top:3px;font-weight:400}
+.row .amt{flex:0 0 auto;text-align:right;font-size:17px;font-weight:700;letter-spacing:-.3px;color:var(--ink-strong);white-space:nowrap}
+.row .amt.in{color:var(--green)}
+.row .time{display:block;font-size:15px;font-weight:400;color:#5C7488;margin-top:3px}
+.row:active{background:#F5F9FF}
+
+/* ---------- demais telas ---------- */
+.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:22px 16px 0}
+.action{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
+.action .b{width:58px;height:58px;border-radius:18px;background:var(--white);display:grid;place-items:center;
+  color:var(--brand);box-shadow:0 2px 10px rgba(21,58,99,.08)}
+.action:active .b{transform:scale(.97)}
+.card{background:var(--white);border-radius:18px;padding:18px;margin:20px 16px 0;box-shadow:0 2px 10px rgba(21,58,99,.08)}
+.card h4{margin:0;font-size:16.5px;font-weight:700;letter-spacing:-.2px}
+.muted{color:var(--ink-2);font-size:14.5px}
+.bar{height:8px;border-radius:8px;background:var(--brand-soft);overflow:hidden;margin:12px 0 6px}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:8px}
+.sect{padding:26px 16px 2px;font-size:14.5px;font-weight:700;color:var(--ink-2)}
+.plastic{margin:20px 16px;border-radius:22px;padding:22px;color:#fff;min-height:200px;display:flex;
+  flex-direction:column;justify-content:space-between;
+  background:linear-gradient(140deg,#0B4F86,#1877E8 58%,#4BA3E8);
+  box-shadow:0 16px 30px rgba(12,78,140,.3);transition:filter .3s}
+.plastic.frozen{filter:grayscale(.85) brightness(.85)}
+.plastic .num{font-size:21px;font-weight:600;letter-spacing:3px}
+.switchrow{display:flex;align-items:center;gap:14px;padding:16px;background:var(--white);border-radius:16px;
+  margin:0 16px 12px;box-shadow:0 2px 10px rgba(21,58,99,.08)}
+.switchrow .av{width:44px;height:44px;border-radius:50%;background:var(--circle-blue);color:var(--brand);display:grid;place-items:center;flex:0 0 auto}
+.sw{width:52px;height:31px;border-radius:999px;background:#CBD9E6;position:relative;transition:background .22s;flex:0 0 auto}
+.sw i{position:absolute;top:3px;left:3px;width:25px;height:25px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.28);transition:transform .22s}
+.sw[aria-checked="true"]{background:var(--brand)}
+.sw[aria-checked="true"] i{transform:translateX(21px)}
+.profile{display:flex;align-items:center;gap:14px;padding:22px 16px}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:23px}
+.menu{background:var(--white);border-radius:18px;margin:6px 16px 0;box-shadow:0 2px 10px rgba(21,58,99,.08);overflow:hidden}
+.menu button{display:flex;align-items:center;gap:14px;width:100%;padding:15px 16px;text-align:left;border-bottom:1px solid var(--line)}
+.menu button:last-child{border-bottom:0}
+.menu button:active{background:#F5F9FF}
+.menu .av{width:40px;height:40px;border-radius:50%;background:var(--circle-blue);color:var(--brand);display:grid;place-items:center;flex:0 0 auto}
+.menu .t{flex:1;font-weight:600;font-size:16px}
+
+/* ---------- barra inferior ---------- */
+.tabbar{display:flex;background:var(--white);border-top:1px solid var(--line);flex:0 0 auto;
+  padding:8px 6px calc(env(safe-area-inset-bottom) + 6px)}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;color:#7A90A6;font-size:11.5px;font-weight:600;padding:4px 0}
+.tabbar button[aria-selected="true"]{color:var(--brand)}
+
+.toast{position:absolute;left:50%;bottom:96px;transform:translate(-50%,14px);background:#12314F;color:#fff;
+  padding:11px 18px;border-radius:999px;font-size:14.5px;font-weight:600;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;z-index:5}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="viewport" id="viewport">
+    <div class="track" id="track">
+
+      <!-- ===== 1. INÍCIO ===== -->
+      <section class="screen" aria-label="Início">
+        <div class="head">
+          <h1>Início</h1>
+          <button class="ico js-eye" aria-label="Mostrar ou ocultar valores"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="ico js-soon" data-msg="Nenhum aviso novo" aria-label="Notificações"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9Z"/><path d="M10 18.5a2 2 0 0 0 4 0"/></svg></button>
+        </div>
+        <div class="balance">
+          <div class="col">
+            <div class="label">Seu Saldo</div>
+            <div class="amount js-money">R$ 0,00</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="action js-soon" data-msg="Área Pix"><span class="b"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M8 4 4 8l4 4"/><path d="M4 8h9a4 4 0 0 1 4 4"/><path d="m16 20 4-4-4-4"/><path d="M20 16h-9a4 4 0 0 1-4-4"/></svg></span>Pix</button>
+          <button class="action js-soon" data-msg="Leitor de código de barras"><span class="b"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 5v14M8 5v14M12 5v14M16 5v14M20 5v14"/></svg></span>Pagar</button>
+          <button class="action js-soon" data-msg="Depósito por Pix ou boleto"><span class="b"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 4v13"/><path d="m7 12 5 5 5-5"/><path d="M4 20h16"/></svg></span>Depositar</button>
+          <button class="action js-soon" data-msg="Escolha um contato"><span class="b"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 20V7"/><path d="m7 12 5-5 5 5"/><path d="M4 4h16"/></svg></span>Transferir</button>
+        </div>
+        <div class="card">
+          <h4>Movimentação de setembro</h4>
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <div style="flex:1"><div class="muted">Entradas</div><div class="js-money" style="font-weight:700;font-size:18px;color:var(--green)">R$ 2.645,13</div></div>
+            <div style="flex:1"><div class="muted">Saídas</div><div class="js-money" style="font-weight:700;font-size:18px">R$ 2.800,13</div></div>
+          </div>
+        </div>
+        <div class="sect">Últimos lançamentos</div>
+        <div class="day" style="padding-top:2px">
+          <button class="row">
+            <span class="av sq">LC</span>
+            <span class="body"><span class="t">Launch Control Serviços Digitais Ltda</span><span class="s">Outros</span></span>
+            <span class="amt js-money">R$ 150,00<span class="time">20:25</span></span>
+          </button>
+          <button class="row">
+            <span class="av"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></span>
+            <span class="body"><span class="t">Pix enviado para Lucas Araujo De Vasconcelos</span><span class="s">Enviados</span></span>
+            <span class="amt js-money">R$ 15,08<span class="time">22:12</span></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== 2. EXTRATO (igual à captura) ===== -->
+      <section class="screen" aria-label="Extrato">
+        <div class="head">
+          <span class="back" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m15 5-7 7 7 7"/></svg></span>
+          <h1>Extrato</h1>
+          <button class="ico js-eye" aria-label="Mostrar ou ocultar valores"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="ico js-soon" data-msg="Central de ajuda" aria-label="Ajuda"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9.2"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2-2.4 3.3"/><path d="M12 17h.01"/></svg></button>
+        </div>
+
+        <div class="balance">
+          <div class="col">
+            <div class="label">Seu Saldo</div>
+            <div class="amount js-money">R$ 0,00</div>
+            <button class="pill js-soon" data-msg="Conecte contas de outros bancos">Conecte seus saldos
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="m9 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+          <button class="dl js-soon" data-msg="Extrato exportado em PDF" aria-label="Baixar extrato">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M5 19h14"/></svg>
+          </button>
+        </div>
+
+        <div class="banner">
+          <svg class="art" width="160" height="112" viewBox="0 0 160 112" fill="none" aria-hidden="true">
+            <ellipse cx="58" cy="100" rx="50" ry="11" fill="#12384E" opacity=".45"/>
+            <path d="M40 48c0-11 12-16 12-16h14s12 5 12 16 11 20 11 33c0 13-13 19-30 19s-30-6-30-19c0-13 11-22 11-33Z" fill="#5A93AC"/>
+            <path d="M53 30h13l-3-10h-7l-3 10Z" fill="#9CC6D8"/>
+            <ellipse cx="59.5" cy="31" rx="7" ry="2.6" fill="#D6E9F1"/>
+            <text x="59" y="86" font-family="Inter, sans-serif" font-size="40" font-weight="800" fill="#33718F" text-anchor="middle">$</text>
+            <g><ellipse cx="124" cy="94" rx="27" ry="9" fill="#DFA02B"/><rect x="97" y="80" width="54" height="14" fill="#DFA02B"/><ellipse cx="124" cy="80" rx="27" ry="9" fill="#FFC64D"/>
+               <ellipse cx="116" cy="66" rx="21" ry="7" fill="#DFA02B"/><rect x="95" y="54" width="42" height="12" fill="#DFA02B"/><ellipse cx="116" cy="54" rx="21" ry="7" fill="#FFC64D"/>
+               <ellipse cx="108" cy="42" rx="15" ry="5.5" fill="#DFA02B"/><rect x="93" y="32" width="30" height="10" fill="#DFA02B"/><ellipse cx="108" cy="32" rx="15" ry="5.5" fill="#FFC64D"/></g>
+          </svg>
+          <div style="max-width:62%;position:relative;z-index:1">
+            <h2>Todos seus saldos aqui.</h2>
+            <p>Conecte suas contas.</p>
+          </div>
+          <span class="go"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></span>
+        </div>
+
+        <div class="tabs" id="tabs">
+          <span class="rail"></span>
+          <button aria-selected="true" data-i="0">Histórico</button>
+          <button aria-selected="false" data-i="1">Agendados</button>
+          <span class="ink" id="tabink"></span>
+        </div>
+
+        <div class="sheet">
+        <div class="inner-view" id="innerView">
+          <div class="inner-track" id="innerTrack">
+
+            <!-- Histórico -->
+            <div class="inner-pane">
+              <div class="filters">
+                <button class="chip sq" aria-label="Buscar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/></svg></button>
+                <button class="chip js-chip" aria-pressed="false">Data <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+                <button class="chip js-chip" aria-pressed="false">Transação <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+                <button class="chip js-chip" aria-pressed="false">Categoria <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+              </div>
+
+              <div class="sums">
+                <div class="sum">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B7A3E" stroke-width="2.2"><path d="M7 7 17 17"/><path d="M17 9v8H9"/></svg>
+                  <div class="k">Entradas (setembro)</div>
+                  <div class="v in js-money">R$ 2.645,13</div>
+                </div>
+                <div class="sum">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--arrow-out)" stroke-width="2.2"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+                  <div class="k">Saídas (setembro)</div>
+                  <div class="v js-money">R$ 2.800,13</div>
+                </div>
+              </div>
+
+              <div class="day">
+                <h3>18 de setembro</h3>
+                <button class="row">
+                  <span class="av sq">LC</span>
+                  <span class="body"><span class="t">Launch Control Serviços Digitais Ltda</span><span class="s">Outros</span></span>
+                  <span class="amt js-money">R$ 150,00<span class="time">20:25</span></span>
+                </button>
+              </div>
+
+              <div class="day">
+                <h3>14 de setembro</h3>
+                <button class="row">
+                  <span class="av"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></span>
+                  <span class="body"><span class="t">Pix enviado para Lucas Araujo De Vasconcelos</span><span class="s">Enviados</span></span>
+                  <span class="amt js-money">R$ 15,08<span class="time">22:12</span></span>
+                </button>
+              </div>
+
+              <div class="day">
+                <h3>12 de setembro</h3>
+                <button class="row">
+                  <span class="av"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></span>
+                  <span class="body"><span class="t">Pix enviado para Lucas Araujo De Vasconcelos</span><span class="s">Enviados</span></span>
+                  <span class="amt js-money">R$ 1,00<span class="time">23:56</span></span>
+                </button>
+                <button class="row">
+                  <span class="av in"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="m4 16 5-5 3.5 3.5L20 7"/><path d="M15 7h5v5"/></svg></span>
+                  <span class="body"><span class="t">Resgate em Cofrinho</span><span class="s">Investimentos</span></span>
+                  <span class="amt in js-money">+R$ 1,00<span class="time">23:55</span></span>
+                </button>
+              </div>
+
+              <div class="day">
+                <h3>11 de setembro</h3>
+                <button class="row">
+                  <span class="av"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></span>
+                  <span class="body"><span class="t">Pix enviado para Lucas Araujo De Vasconcelos</span><span class="s">Enviados</span></span>
+                  <span class="amt js-money">R$ 6,18<span class="time">22:47</span></span>
+                </button>
+              </div>
+
+              <div class="day">
+                <h3>09 de setembro</h3>
+                <button class="row">
+                  <span class="av"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></span>
+                  <span class="body"><span class="t">Pix enviado para Ana Maria de França Araujo</span><span class="s">Enviados</span></span>
+                  <span class="amt js-money">R$ 4,00<span class="time">17:41</span></span>
+                </button>
+                <button class="row">
+                  <span class="av"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></span>
+                  <span class="body"><span class="t">Pix enviado para Ana Maria de França Araujo</span><span class="s">Enviados</span></span>
+                  <span class="amt js-money">R$ 114,80<span class="time">17:38</span></span>
+                </button>
+              </div>
+              <div style="height:24px"></div>
+            </div>
+
+            <!-- Agendados -->
+            <div class="inner-pane">
+              <div class="sums" style="grid-template-columns:1fr">
+                <div class="sum">
+                  <div class="k">Agendamentos dos próximos 30 dias</div>
+                  <div class="v js-money">R$ 0,00</div>
+                </div>
+              </div>
+              <div class="day">
+                <h3 style="font-size:17px">Nada agendado</h3>
+                <p class="muted" style="margin:4px 0 0">Quando você agendar um Pix ou um pagamento, ele aparece aqui.</p>
+                <button class="pill js-soon" data-msg="Agendar um Pix" style="margin-top:16px">Agendar um Pix
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="m9 5 7 7-7 7"/></svg>
+                </button>
+              </div>
+              <div style="height:24px"></div>
+            </div>
+
+          </div>
+        </div>
+        </div>
+      </section>
+
+      <!-- ===== 3. CARTÕES ===== -->
+      <section class="screen" aria-label="Cartões">
+        <div class="head"><h1>Cartões</h1>
+          <button class="ico js-soon" data-msg="Pedir cartão adicional" aria-label="Adicionar cartão"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+        <div class="plastic" id="plastic">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div style="font-weight:700;font-size:18px;letter-spacing:-.3px">Cartão da conta</div>
+            <svg width="38" height="26" viewBox="0 0 38 26" fill="none"><circle cx="14" cy="13" r="10" fill="#fff" opacity=".9"/><circle cx="25" cy="13" r="10" fill="#fff" opacity=".5"/></svg>
+          </div>
+          <div>
+            <div class="num js-money">•••• •••• •••• 4417</div>
+            <div style="display:flex;gap:26px;margin-top:12px;font-size:13.5px;opacity:.9"><span>TITULAR DA CONTA</span><span>10/29</span></div>
+          </div>
+        </div>
+        <div class="switchrow">
+          <span class="av"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v18M3 12h18M6 6l12 12M18 6 6 18"/></svg></span>
+          <span style="flex:1"><span style="font-weight:700;display:block">Congelar cartão</span><span class="muted" id="frozenTxt">Bloqueia compras na hora</span></span>
+          <button class="sw" id="freeze" role="switch" aria-checked="false" aria-label="Congelar cartão"><i></i></button>
+        </div>
+        <div class="switchrow">
+          <span class="av"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="9" width="16" height="12" rx="3"/><path d="M8 9V7a4 4 0 0 1 8 0v2"/></svg></span>
+          <span style="flex:1"><span style="font-weight:700;display:block">Compras online</span><span class="muted">Liberado para lojas na internet</span></span>
+          <button class="sw" role="switch" aria-checked="true" aria-label="Compras online"><i></i></button>
+        </div>
+        <div class="menu" style="margin-top:20px">
+          <button class="js-soon" data-msg="Cartão virtual criado"><span class="t">Criar cartão virtual</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A90A6" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></button>
+          <button class="js-soon" data-msg="A senha tem 4 dígitos"><span class="t">Alterar senha do cartão</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A90A6" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></button>
+          <button class="js-soon" data-msg="Abrimos o suporte para você"><span class="t">Comunicar perda ou roubo</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A90A6" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></button>
+        </div>
+      </section>
+
+      <!-- ===== 4. PERFIL ===== -->
+      <section class="screen" aria-label="Perfil">
+        <div class="head"><h1>Perfil</h1></div>
+        <div class="profile">
+          <div class="avatar">C</div>
+          <div>
+            <div style="font-weight:700;font-size:19px;letter-spacing:-.3px">Sua conta</div>
+            <div class="muted">Agência 0001 · Conta 38.472-6</div>
+          </div>
+        </div>
+        <div class="menu">
+          <button class="js-soon" data-msg="Chaves Pix: CPF e e-mail"><span class="av"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M8 4 4 8l4 4"/><path d="M4 8h9a4 4 0 0 1 4 4"/><path d="m16 20 4-4-4-4"/><path d="M20 16h-9a4 4 0 0 1-4-4"/></svg></span><span class="t">Minhas chaves Pix</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A90A6" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></button>
+          <button class="js-soon" data-msg="Dados pessoais"><span class="av"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg></span><span class="t">Dados pessoais</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A90A6" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></button>
+          <button class="js-soon" data-msg="Notificações ativas"><span class="av"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9Z"/><path d="M10 18.5a2 2 0 0 0 4 0"/></svg></span><span class="t">Avisos e notificações</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A90A6" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></button>
+          <button class="js-soon" data-msg="Atendimento 24h no chat"><span class="av"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M21 12a8 8 0 1 1-3.2-6.4"/><path d="M8 20l-4 1 1-4"/></svg></span><span class="t">Ajuda</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A90A6" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></button>
+        </div>
+        <div class="menu" style="margin-top:14px">
+          <button class="js-soon" data-msg="Até logo"><span class="av"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M14 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8"/><path d="m17 8 4 4-4 4"/><path d="M21 12H10"/></svg></span><span class="t">Sair da conta</span></button>
+        </div>
+        <div style="text-align:center;color:var(--ink-2);font-size:13px;padding:22px">versão 2.4.0</div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="stickybar" id="stickybar">
+    <div class="hrow">
+      <span class="back" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m15 5-7 7 7 7"/></svg></span>
+      <div class="col">
+        <h2>Histórico</h2>
+        <div class="sub">Saldo em conta: <span class="js-money">R$ 0,00</span></div>
+      </div>
+      <button class="ico js-eye" aria-label="Mostrar ou ocultar valores"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      <button class="ico js-soon" data-msg="Central de ajuda" aria-label="Ajuda"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9.2"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2-2.4 3.3"/><path d="M12 17h.01"/></svg></button>
+    </div>
+    <div class="filters">
+      <button class="chip sq" aria-label="Buscar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/></svg></button>
+      <button class="chip js-chip" aria-pressed="false">Data <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+      <button class="chip js-chip" aria-pressed="false">Transação <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+      <button class="chip js-chip" aria-pressed="false">Categoria <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+    </div>
+  </div>
+
+  <nav class="tabbar" id="tabbar" role="tablist" aria-label="Seções">
+    <button role="tab" aria-selected="false" data-i="0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 11 8-7 8 7"/><path d="M6 10v9h12v-9"/></svg>Início</button>
+    <button role="tab" aria-selected="true" data-i="1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Extrato</button>
+    <button role="tab" aria-selected="false" data-i="2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/></svg>Cartões</button>
+    <button role="tab" aria-selected="false" data-i="3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Perfil</button>
+  </nav>
+
+  <div class="detail" id="detail" aria-hidden="true">
+    <div class="dhead">
+      <button class="dback" id="dback" aria-label="Voltar">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="m10 6-6 6 6 6"/></svg>
+      </button>
+      <div class="logo" id="dlogo">L</div>
+      <div class="dname" id="dname">—</div>
+      <div class="ddate" id="ddate">—</div>
+    </div>
+    <div class="dbody">
+      <div class="dlabel" id="dlabel">Valor enviado</div>
+      <div class="dvalue js-money" id="dvalue">R$ 0,00</div>
+      <div class="dlist">
+        <button class="drow js-soon" data-msg="Escolha uma nova categoria">
+          <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2.4"/><rect x="13" y="3" width="8" height="8" rx="2.4"/><rect x="3" y="13" width="8" height="8" rx="2.4"/><rect x="13" y="13" width="8" height="8" rx="2.4"/></svg></span>
+          <span style="flex:1"><span class="dt" id="dcat">Outros</span><span class="ds">Alterar tipo de categoria</span></span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg>
+        </button>
+        <button class="drow js-soon" data-msg="Abrimos o formulário de contestação">
+          <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>
+          <span style="flex:1"><span class="dt">Contestar compra</span><span class="ds">Informe problemas com a sua compra</span></span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+(function(){
+  var viewport=document.getElementById('viewport'), track=document.getElementById('track');
+  var innerView=document.getElementById('innerView'), innerTrack=document.getElementById('innerTrack');
+  var tabbar=document.getElementById('tabbar'), tabs=document.getElementById('tabs'), tabink=document.getElementById('tabink');
+  var screens=track.children;
+  var outer={el:track,i:1,n:screens.length,w:0};
+  var inner={el:innerTrack,i:0,n:2,w:0};
+
+  function measure(){
+    outer.w=viewport.clientWidth; inner.w=innerView.clientWidth;
+    for(var i=0;i<screens.length;i++) screens[i].style.width=outer.w+'px';
+    var p=innerTrack.children; for(var j=0;j<p.length;j++) p[j].style.width=inner.w+'px';
+    place(outer,false); place(inner,false); syncHeight();
+  }
+  function place(s,a){ s.el.style.transition=a?'transform .34s cubic-bezier(.22,1,.36,1)':'none';
+    s.el.style.transform='translate3d('+(-s.i*s.w)+'px,0,0)'; }
+  function drag(s,dx){ var x=-s.i*s.w+dx, min=-(s.n-1)*s.w, max=0;
+    if(x>max) x=max+(x-max)*0.32; if(x<min) x=min+(x-min)*0.32;
+    s.el.style.transition='none'; s.el.style.transform='translate3d('+x+'px,0,0)'; }
+  function syncHeight(){ innerView.style.height=innerTrack.children[inner.i].offsetHeight+'px'; }
+
+  function goOuter(i){ outer.i=Math.max(0,Math.min(outer.n-1,i)); place(outer,true);
+    var b=tabbar.querySelectorAll('button'); for(var k=0;k<b.length;k++) b[k].setAttribute('aria-selected',k===outer.i?'true':'false'); updateSticky(); }
+  function goInner(i){ inner.i=Math.max(0,Math.min(inner.n-1,i)); place(inner,true);
+    var b=tabs.querySelectorAll('button'); for(var k=0;k<b.length;k++) b[k].setAttribute('aria-selected',k===inner.i?'true':'false');
+    tabink.style.transform='translateX('+(inner.i*100)+'%)'; setTimeout(syncHeight,20); updateSticky(); }
+
+  var st=null;
+  viewport.addEventListener('pointerdown',function(e){
+    if(e.pointerType==='mouse'&&e.button!==0) return;
+    st={x:e.clientX,y:e.clientY,t:Date.now(),axis:null,target:null,id:e.pointerId,
+        inInner:!!(e.target.closest&&e.target.closest('#innerView'))};
+  });
+  viewport.addEventListener('pointermove',function(e){
+    if(!st||e.pointerId!==st.id) return;
+    var dx=e.clientX-st.x, dy=e.clientY-st.y;
+    if(!st.axis){
+      if(Math.abs(dx)<9&&Math.abs(dy)<9) return;
+      if(Math.abs(dy)>Math.abs(dx)){ st=null; return; }
+      st.axis='x';
+      var canInner=st.inInner&&((dx<0&&inner.i<inner.n-1)||(dx>0&&inner.i>0));
+      st.target=canInner?inner:outer;
+      if(st.target===inner) innerView.style.height='auto';
+      try{ viewport.setPointerCapture(e.pointerId); }catch(err){}
+    }
+    drag(st.target,dx);
+  });
+  viewport.addEventListener('pointerup',function(e){
+    if(!st) return;
+    if(st.axis){
+      var s=st.target, dx=e.clientX-st.x;
+      var fast=Math.abs(dx)/Math.max(1,Date.now()-st.t)>0.45;
+      var step=(Math.abs(dx)>s.w*0.22||fast)?(dx<0?1:-1):0;
+      if(s===inner) goInner(inner.i+step); else goOuter(outer.i+step);
+    }
+    st=null;
+  });
+  viewport.addEventListener('pointercancel',function(){ if(st&&st.target){ st.target===inner?goInner(inner.i):goOuter(outer.i);} st=null; });
+
+  tabbar.addEventListener('click',function(e){ var b=e.target.closest('button[data-i]'); if(b) goOuter(+b.dataset.i); });
+  tabs.addEventListener('click',function(e){ var b=e.target.closest('button[data-i]'); if(b) goInner(+b.dataset.i); });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight') goOuter(outer.i+1);
+    if(e.key==='ArrowLeft') goOuter(outer.i-1);
+  });
+
+  var stickybar=document.getElementById('stickybar');
+  var extrato=screens[1];
+  function updateSticky(){
+    var on = outer.i===1 && inner.i===0 && extrato.scrollTop>170;
+    stickybar.classList.toggle('on',on);
+  }
+  extrato.addEventListener('scroll',updateSticky,{passive:true});
+
+  /* ---------- comprovante ---------- */
+  var detail=document.getElementById('detail');
+  function openDetail(row){
+    var t=row.querySelector('.t').textContent.trim();
+    var sub=row.querySelector('.s').textContent.trim();
+    var amtEl=row.querySelector('.amt');
+    var timeEl=amtEl.querySelector('.time');
+    var time=timeEl?timeEl.textContent.trim():'';
+    var valor=amtEl.childNodes[0].textContent.trim();
+    var recebido=amtEl.classList.contains('in');
+    var grupo=row.closest('.day').querySelector('h3');
+    var dia=grupo?grupo.textContent.trim():'';
+
+    var nome=t.replace(/^Pix enviado para\s+/i,'').replace(/^Pix recebido de\s+/i,'');
+    var partes=nome.split(/\s+/);
+    var sigla=(partes[0][0]+(partes[1]?partes[1][0]:'')).toUpperCase();
+
+    document.getElementById('dlogo').textContent=sigla;
+    document.getElementById('dname').textContent=nome;
+    document.getElementById('ddate').textContent=dia+' de 2026'+(time?' às '+time:'');
+    document.getElementById('dlabel').textContent=recebido?'Valor recebido':'Valor enviado';
+    document.getElementById('dvalue').textContent=valor.replace(/^\+/,'');
+    document.getElementById('dcat').textContent=(sub==='Enviados'||sub==='Recebidos')?'Outros':sub;
+    document.getElementById('dvalue').classList.toggle('hidden-val',hidden);
+
+    detail.classList.add('on'); detail.setAttribute('aria-hidden','false');
+    detail.scrollTop=0; detail.style.transform='';
+  }
+  function closeDetail(){ detail.classList.remove('on'); detail.setAttribute('aria-hidden','true'); detail.style.transform=''; }
+  document.getElementById('dback').addEventListener('click',closeDetail);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeDetail(); });
+
+  /* arrastar para a direita fecha o comprovante */
+  var ds=null;
+  detail.addEventListener('pointerdown',function(e){
+    if(e.target.closest('.drow')) { ds=null; return; }
+    ds={x:e.clientX,y:e.clientY,id:e.pointerId,axis:null};
+  });
+  detail.addEventListener('pointermove',function(e){
+    if(!ds||e.pointerId!==ds.id) return;
+    var dx=e.clientX-ds.x, dy=e.clientY-ds.y;
+    if(!ds.axis){
+      if(Math.abs(dx)<10&&Math.abs(dy)<10) return;
+      if(Math.abs(dy)>Math.abs(dx)||dx<0){ ds=null; return; }
+      ds.axis='x'; try{ detail.setPointerCapture(e.pointerId); }catch(err){}
+    }
+    detail.style.transition='none';
+    detail.style.transform='translateX('+Math.max(0,dx)+'px)';
+  });
+  detail.addEventListener('pointerup',function(e){
+    if(!ds) return;
+    detail.style.transition='';
+    if(ds.axis&&e.clientX-ds.x>detail.clientWidth*0.28) closeDetail(); else detail.style.transform='';
+    ds=null;
+  });
+
+  var hidden=false;
+  document.addEventListener('click',function(e){
+    var eye=e.target.closest('.js-eye');
+    if(eye){ hidden=!hidden; var v=document.querySelectorAll('.js-money');
+      for(var i=0;i<v.length;i++) v[i].classList.toggle('hidden-val',hidden);
+      toast(hidden?'Valores ocultos':'Valores visíveis'); return; }
+    var chip=e.target.closest('.js-chip');
+    if(chip){ chip.setAttribute('aria-pressed',chip.getAttribute('aria-pressed')==='true'?'false':'true'); return; }
+    var sw=e.target.closest('.sw[role="switch"]');
+    if(sw){ var on=sw.getAttribute('aria-checked')!=='true'; sw.setAttribute('aria-checked',on?'true':'false');
+      if(sw.id==='freeze'){ document.getElementById('plastic').classList.toggle('frozen',on);
+        document.getElementById('frozenTxt').textContent=on?'Cartão congelado agora':'Bloqueia compras na hora';
+        toast(on?'Cartão congelado':'Cartão liberado'); } return; }
+    var row=e.target.closest('.row');
+    if(row){ openDetail(row); return; }
+    var soon=e.target.closest('.js-soon');
+    if(soon) toast(soon.dataset.msg||'Em breve');
+  });
+
+  var toastEl=document.getElementById('toast'), tt;
+  function toast(m){ toastEl.textContent=m; toastEl.classList.add('on');
+    clearTimeout(tt); tt=setTimeout(function(){ toastEl.classList.remove('on'); },1700); }
+
+  window.addEventListener('resize',measure);
+  measure(); goInner(0);
+})();
+</script>
+</body>
+</html>
