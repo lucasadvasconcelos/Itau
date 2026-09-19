@@ -53,22 +53,22 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 }
 .detail::-webkit-scrollbar{display:none}
 .detail.on{transform:none;visibility:visible}
-.detail .dhead{background:#C9E5FB;padding:calc(env(safe-area-inset-top) + 16px) 16px 34px;flex:0 0 auto}
+.detail .dhead{background:#C9E5FB;padding:calc(env(safe-area-inset-top) + 14px) 16px 28px;flex:0 0 auto}
 .detail .dback{width:44px;height:44px;display:grid;place-items:center;color:var(--brand);border-radius:50%;margin-left:-6px}
 .detail .dback:active{background:rgba(255,255,255,.5)}
-.detail .logo{width:112px;height:112px;border-radius:50%;background:#C2EDF8;color:var(--brand);
-  display:grid;place-items:center;margin:2px auto 14px;font-size:38px;font-weight:700;letter-spacing:-1px}
-.detail .dname{text-align:center;font-size:19px;font-weight:700;color:#22303E;letter-spacing:-.2px;padding:0 10px;line-height:1.3}
-.detail .ddate{text-align:center;font-size:17px;color:#33414E;margin-top:6px}
+.detail .logo{width:64px;height:64px;border-radius:50%;background:#C2EDF8;color:var(--brand);
+  display:grid;place-items:center;margin:2px auto 12px;font-size:23px;font-weight:700;letter-spacing:-1px}
+.detail .dname{text-align:center;font-size:15px;font-weight:700;color:#22303E;letter-spacing:-.2px;padding:0 10px;line-height:1.3}
+.detail .ddate{text-align:center;font-size:14.5px;color:#33414E;margin-top:5px}
 .detail .dbody{padding:26px 16px 0}
-.detail .dlabel{font-size:17px;color:#3B4A57}
-.detail .dvalue{font-size:37px;font-weight:700;letter-spacing:-1.2px;color:#1F2D3A;margin-top:4px}
+.detail .dlabel{font-size:12px;color:#3B4A57}
+.detail .dvalue{font-size:27px;font-weight:700;letter-spacing:-1px;color:#1F2D3A;margin-top:4px}
 .detail .dlist{margin-top:28px}
 .detail .drow{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px 0;border-bottom:1px solid var(--line)}
 .detail .drow:last-child{border-bottom:0}
-.detail .drow .ic{width:60px;height:60px;border-radius:50%;background:#E4F0FD;color:var(--brand);display:grid;place-items:center;flex:0 0 auto}
-.detail .drow .dt{display:block;font-size:18px;font-weight:700;color:#1F3550;letter-spacing:-.2px}
-.detail .drow .ds{display:block;font-size:16px;color:#46596B;margin-top:2px}
+.detail .drow .ic{width:46px;height:46px;border-radius:50%;background:#E4F0FD;color:var(--brand);display:grid;place-items:center;flex:0 0 auto}
+.detail .drow .dt{display:block;font-size:16px;font-weight:700;color:#1F3550;letter-spacing:-.2px}
+.detail .drow .ds{display:block;font-size:13.5px;color:#46596B;margin-top:2px}
 .detail .drow:active{background:#F5F9FF}
 
 /* ---------- cabeçalho fixo ao rolar ---------- */
@@ -84,12 +84,12 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .stickybar .hrow{display:flex;align-items:flex-start;padding:0 16px}
 .stickybar .back{color:var(--brand);margin:2px 10px 0 0;flex:0 0 auto}
 .stickybar .col{flex:1;min-width:0}
-.stickybar h2{margin:0;font-size:26px;font-weight:700;letter-spacing:-.6px;color:var(--ink-strong);line-height:1.1}
-.stickybar .sub{font-size:17px;color:#41607C;margin-top:4px}
+.stickybar h2{margin:0;font-size:17.5px;font-weight:700;letter-spacing:-.3px;color:var(--ink-strong);line-height:1.1}
+.stickybar .sub{font-size:14px;color:#41607C;margin-top:2px}
 .stickybar .filters{padding:20px 16px 0}
 .stickybar .chip{background:transparent}
 .stickybar .chip.sq{background:rgba(255,255,255,.55)}
-.stickybar .ico{width:44px;height:44px;display:grid;place-items:center;color:var(--brand);border-radius:50%;flex:0 0 auto}
+.stickybar .ico{width:40px;height:40px;display:grid;place-items:center;color:var(--brand);border-radius:50%;flex:0 0 auto}
 .stickybar .ico:active{background:var(--brand-soft)}
 
 .viewport{flex:1;min-height:0;position:relative;overflow:hidden;touch-action:pan-y}
@@ -101,33 +101,33 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 /* ---------- topo extrato ---------- */
 .head{display:flex;align-items:center;padding:calc(env(safe-area-inset-top) + 16px) 16px 0}
 .head .back{color:var(--brand);margin-right:10px}
-.head h1{flex:1;margin:0;font-size:28px;font-weight:700;letter-spacing:-.6px;color:var(--ink-strong)}
-.head .ico{width:44px;height:44px;display:grid;place-items:center;color:var(--brand);border-radius:50%}
+.head h1{flex:1;margin:0;font-size:17.5px;font-weight:700;letter-spacing:-.3px;color:var(--ink-strong)}
+.head .ico{width:40px;height:40px;display:grid;place-items:center;color:var(--brand);border-radius:50%}
 .head .ico:active{background:var(--brand-soft)}
 
 .balance{display:flex;align-items:flex-start;padding:22px 16px 0}
 .balance .col{flex:1;min-width:0}
-.balance .label{font-size:17px;color:#41607C;font-weight:400}
-.balance .amount{font-size:37px;font-weight:700;letter-spacing:-1.3px;color:var(--ink-strong);margin:2px 0 14px;line-height:1.05}
+.balance .label{font-size:14px;color:#41607C;font-weight:400}
+.balance .amount{font-size:27px;font-weight:700;letter-spacing:-1px;color:var(--ink-strong);margin:2px 0 12px;line-height:1.05}
 .hidden-val{filter:blur(9px);user-select:none}
-.pill{display:inline-flex;align-items:center;gap:10px;background:var(--brand-soft);color:var(--brand);
-  font-weight:700;font-size:15.5px;padding:11px 16px;border-radius:999px;letter-spacing:-.1px}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--brand-soft);color:var(--brand);
+  font-weight:700;font-size:12px;padding:9px 14px;border-radius:999px;letter-spacing:-.1px}
 .pill:active{transform:scale(.98)}
-.dl{width:54px;height:54px;border-radius:16px;background:var(--brand-soft);display:grid;place-items:center;color:var(--brand);flex:0 0 auto;margin-top:26px}
+.dl{width:46px;height:46px;border-radius:14px;background:var(--brand-soft);display:grid;place-items:center;color:var(--brand);flex:0 0 auto;margin-top:22px}
 
 /* ---------- banner ---------- */
 .banner{position:relative;margin:20px 16px 0;border-radius:16px;overflow:hidden;color:#fff;
-  min-height:106px;display:flex;align-items:center;padding:0 18px;
+  min-height:82px;display:flex;align-items:center;padding:0 16px;
   background:linear-gradient(105deg,#2F6D8E 0%,#2A6584 45%,#1E5070 100%)}
-.banner h2{margin:0;font-size:18px;font-weight:700;letter-spacing:-.3px}
-.banner p{margin:2px 0 0;font-size:17px;color:#DCEBF3;font-weight:400}
+.banner h2{margin:0;font-size:14.5px;font-weight:700;letter-spacing:-.3px}
+.banner p{margin:1px 0 0;font-size:14.5px;color:#DCEBF3;font-weight:400}
 .banner .art{position:absolute;right:4px;bottom:-8px}
-.banner .go{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:42px;height:42px;
+.banner .go{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:36px;height:36px;
   border-radius:50%;background:#10283A;display:grid;place-items:center;box-shadow:0 0 0 5px rgba(255,255,255,.16)}
 
 /* ---------- abas ---------- */
 .tabs{position:relative;display:flex;margin-top:22px;background:var(--blue-bg)}
-.tabs button{flex:1;padding:14px 0 16px;font-size:17px;font-weight:600;color:#5E7A93;letter-spacing:-.2px}
+.tabs button{flex:1;padding:12px 0 14px;font-size:15px;font-weight:600;color:#5E7A93;letter-spacing:-.2px}
 .tabs button[aria-selected="true"]{color:var(--brand);font-weight:700}
 .tabs .rail{position:absolute;left:0;right:0;bottom:0;height:3px;background:#C6D8EA}
 .tabs .ink{position:absolute;bottom:0;left:0;width:50%;height:3px;background:var(--brand);
@@ -141,48 +141,48 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 /* ---------- filtros ---------- */
 .filters{display:flex;gap:11px;padding:20px 16px 0;overflow-x:auto;scrollbar-width:none}
 .filters::-webkit-scrollbar{display:none}
-.chip{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;background:var(--white);
-  border:1.5px solid var(--chip-line);border-radius:999px;padding:0 18px;height:46px;
-  font-size:16px;font-weight:400;color:var(--ink-strong)}
-.chip.sq{width:46px;padding:0;justify-content:center;border-radius:14px;color:var(--brand)}
+.chip{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;background:var(--white);
+  border:1.5px solid var(--chip-line);border-radius:999px;padding:0 16px;height:42px;
+  font-size:15px;font-weight:400;color:var(--ink-strong)}
+.chip.sq{width:42px;padding:0;justify-content:center;border-radius:14px;color:var(--brand)}
 .chip[aria-pressed="true"]{border-color:var(--brand);color:var(--brand);background:#F0F7FF;font-weight:600}
 
 /* ---------- somas ---------- */
 .sums{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:18px 16px 0}
-.sum{border:1.5px solid var(--chip-line);border-radius:14px;padding:14px 14px 16px}
-.sum .k{color:#5C7488;font-size:14.5px;margin-top:10px}
-.sum .v{font-size:19px;font-weight:700;letter-spacing:-.4px;margin-top:1px;color:var(--ink-strong)}
+.sum{border:1.5px solid var(--chip-line);border-radius:14px;padding:12px 12px 14px}
+.sum .k{color:#5C7488;font-size:12px;margin-top:8px}
+.sum .v{font-size:17px;font-weight:700;letter-spacing:-.4px;margin-top:1px;color:var(--ink-strong)}
 .sum .v.in{color:var(--green)}
 
 /* ---------- lista ---------- */
-.day{padding:30px 16px 0}
-.day h3{margin:0 0 6px;font-size:19px;font-weight:700;letter-spacing:-.4px;color:var(--ink-strong)}
+.day{padding:26px 16px 0}
+.day h3{margin:0 0 4px;font-size:16px;font-weight:700;letter-spacing:-.3px;color:var(--ink-strong)}
 .row{display:flex;gap:14px;align-items:center;width:100%;text-align:left;padding:16px 0;border-bottom:1px solid var(--line)}
 .day .row:last-child{border-bottom:0}
-.row .av{flex:0 0 auto;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+.row .av{flex:0 0 auto;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;
   background:var(--circle-blue);color:var(--brand)}
 .row .av.in{background:var(--circle-green);color:var(--green)}
-.row .av.sq{border-radius:18px;font-size:22px;font-weight:700;letter-spacing:-.8px}
+.row .av.sq{border-radius:19px;font-size:20px;font-weight:700;letter-spacing:-.8px}
 .row .body{flex:1;min-width:0}
-.row .t{display:block;font-size:17px;font-weight:700;letter-spacing:-.3px;color:var(--ink);line-height:1.25}
-.row .s{display:block;font-size:15px;color:#5C7488;margin-top:3px;font-weight:400}
+.row .t{display:block;font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--ink);line-height:1.25}
+.row .s{display:block;font-size:12px;color:#5C7488;margin-top:3px;font-weight:400}
 .row .amt{flex:0 0 auto;text-align:right;font-size:17px;font-weight:700;letter-spacing:-.3px;color:var(--ink-strong);white-space:nowrap}
 .row .amt.in{color:var(--green)}
-.row .time{display:block;font-size:15px;font-weight:400;color:#5C7488;margin-top:3px}
+.row .time{display:block;font-size:12px;font-weight:400;color:#5C7488;margin-top:3px}
 .row:active{background:#F5F9FF}
 
 /* ---------- demais telas ---------- */
 .actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:22px 16px 0}
-.action{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
-.action .b{width:58px;height:58px;border-radius:18px;background:var(--white);display:grid;place-items:center;
+.action{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;font-weight:600}
+.action .b{width:54px;height:54px;border-radius:18px;background:var(--white);display:grid;place-items:center;
   color:var(--brand);box-shadow:0 2px 10px rgba(21,58,99,.08)}
 .action:active .b{transform:scale(.97)}
 .card{background:var(--white);border-radius:18px;padding:18px;margin:20px 16px 0;box-shadow:0 2px 10px rgba(21,58,99,.08)}
-.card h4{margin:0;font-size:16.5px;font-weight:700;letter-spacing:-.2px}
-.muted{color:var(--ink-2);font-size:14.5px}
+.card h4{margin:0;font-size:15px;font-weight:700;letter-spacing:-.2px}
+.muted{color:var(--ink-2);font-size:12.5px}
 .bar{height:8px;border-radius:8px;background:var(--brand-soft);overflow:hidden;margin:12px 0 6px}
 .bar i{display:block;height:100%;background:var(--brand);border-radius:8px}
-.sect{padding:26px 16px 2px;font-size:14.5px;font-weight:700;color:var(--ink-2)}
+.sect{padding:24px 16px 2px;font-size:12.5px;font-weight:700;color:var(--ink-2)}
 .plastic{margin:20px 16px;border-radius:22px;padding:22px;color:#fff;min-height:200px;display:flex;
   flex-direction:column;justify-content:space-between;
   background:linear-gradient(140deg,#0B4F86,#1877E8 58%,#4BA3E8);
@@ -203,12 +203,12 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .menu button:last-child{border-bottom:0}
 .menu button:active{background:#F5F9FF}
 .menu .av{width:40px;height:40px;border-radius:50%;background:var(--circle-blue);color:var(--brand);display:grid;place-items:center;flex:0 0 auto}
-.menu .t{flex:1;font-weight:600;font-size:16px}
+.menu .t{flex:1;font-weight:600;font-size:15px}
 
 /* ---------- barra inferior ---------- */
 .tabbar{display:flex;background:var(--white);border-top:1px solid var(--line);flex:0 0 auto;
   padding:8px 6px calc(env(safe-area-inset-bottom) + 6px)}
-.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;color:#7A90A6;font-size:11.5px;font-weight:600;padding:4px 0}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;color:#7A90A6;font-size:10.5px;font-weight:600;padding:4px 0}
 .tabbar button[aria-selected="true"]{color:var(--brand)}
 
 .toast{position:absolute;left:50%;bottom:96px;transform:translate(-50%,14px);background:#12314F;color:#fff;
@@ -228,8 +228,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <section class="screen" aria-label="Início">
         <div class="head">
           <h1>Início</h1>
-          <button class="ico js-eye" aria-label="Mostrar ou ocultar valores"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          <button class="ico js-soon" data-msg="Nenhum aviso novo" aria-label="Notificações"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9Z"/><path d="M10 18.5a2 2 0 0 0 4 0"/></svg></button>
+          <button class="ico js-eye" aria-label="Mostrar ou ocultar valores"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="ico js-soon" data-msg="Nenhum aviso novo" aria-label="Notificações"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9Z"/><path d="M10 18.5a2 2 0 0 0 4 0"/></svg></button>
         </div>
         <div class="balance">
           <div class="col">
@@ -238,10 +238,10 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
           </div>
         </div>
         <div class="actions">
-          <button class="action js-soon" data-msg="Área Pix"><span class="b"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M8 4 4 8l4 4"/><path d="M4 8h9a4 4 0 0 1 4 4"/><path d="m16 20 4-4-4-4"/><path d="M20 16h-9a4 4 0 0 1-4-4"/></svg></span>Pix</button>
-          <button class="action js-soon" data-msg="Leitor de código de barras"><span class="b"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 5v14M8 5v14M12 5v14M16 5v14M20 5v14"/></svg></span>Pagar</button>
-          <button class="action js-soon" data-msg="Depósito por Pix ou boleto"><span class="b"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 4v13"/><path d="m7 12 5 5 5-5"/><path d="M4 20h16"/></svg></span>Depositar</button>
-          <button class="action js-soon" data-msg="Escolha um contato"><span class="b"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 20V7"/><path d="m7 12 5-5 5 5"/><path d="M4 4h16"/></svg></span>Transferir</button>
+          <button class="action js-soon" data-msg="Área Pix"><span class="b"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M8 4 4 8l4 4"/><path d="M4 8h9a4 4 0 0 1 4 4"/><path d="m16 20 4-4-4-4"/><path d="M20 16h-9a4 4 0 0 1-4-4"/></svg></span>Pix</button>
+          <button class="action js-soon" data-msg="Leitor de código de barras"><span class="b"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 5v14M8 5v14M12 5v14M16 5v14M20 5v14"/></svg></span>Pagar</button>
+          <button class="action js-soon" data-msg="Depósito por Pix ou boleto"><span class="b"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 4v13"/><path d="m7 12 5 5 5-5"/><path d="M4 20h16"/></svg></span>Depositar</button>
+          <button class="action js-soon" data-msg="Escolha um contato"><span class="b"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 20V7"/><path d="m7 12 5-5 5 5"/><path d="M4 4h16"/></svg></span>Transferir</button>
         </div>
         <div class="card">
           <h4>Movimentação de setembro</h4>
@@ -268,10 +268,10 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <!-- ===== 2. EXTRATO (igual à captura) ===== -->
       <section class="screen" aria-label="Extrato">
         <div class="head">
-          <span class="back" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m15 5-7 7 7 7"/></svg></span>
+          <span class="back" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m15 5-7 7 7 7"/></svg></span>
           <h1>Extrato</h1>
-          <button class="ico js-eye" aria-label="Mostrar ou ocultar valores"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          <button class="ico js-soon" data-msg="Central de ajuda" aria-label="Ajuda"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9.2"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2-2.4 3.3"/><path d="M12 17h.01"/></svg></button>
+          <button class="ico js-eye" aria-label="Mostrar ou ocultar valores"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="ico js-soon" data-msg="Central de ajuda" aria-label="Ajuda"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9.2"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2-2.4 3.3"/><path d="M12 17h.01"/></svg></button>
         </div>
 
         <div class="balance">
@@ -279,16 +279,16 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
             <div class="label">Seu Saldo</div>
             <div class="amount js-money">R$ 0,00</div>
             <button class="pill js-soon" data-msg="Conecte contas de outros bancos">Conecte seus saldos
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="m9 5 7 7-7 7"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="m9 5 7 7-7 7"/></svg>
             </button>
           </div>
           <button class="dl js-soon" data-msg="Extrato exportado em PDF" aria-label="Baixar extrato">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M5 19h14"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M5 19h14"/></svg>
           </button>
         </div>
 
         <div class="banner">
-          <svg class="art" width="160" height="112" viewBox="0 0 160 112" fill="none" aria-hidden="true">
+          <svg class="art" width="126" height="88" viewBox="0 0 160 112" fill="none" aria-hidden="true">
             <ellipse cx="58" cy="100" rx="50" ry="11" fill="#12384E" opacity=".45"/>
             <path d="M40 48c0-11 12-16 12-16h14s12 5 12 16 11 20 11 33c0 13-13 19-30 19s-30-6-30-19c0-13 11-22 11-33Z" fill="#5A93AC"/>
             <path d="M53 30h13l-3-10h-7l-3 10Z" fill="#9CC6D8"/>
@@ -302,7 +302,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
             <h2>Todos seus saldos aqui.</h2>
             <p>Conecte suas contas.</p>
           </div>
-          <span class="go"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></span>
+          <span class="go"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg></span>
         </div>
 
         <div class="tabs" id="tabs">
@@ -319,20 +319,20 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
             <!-- Histórico -->
             <div class="inner-pane">
               <div class="filters">
-                <button class="chip sq" aria-label="Buscar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/></svg></button>
-                <button class="chip js-chip" aria-pressed="false">Data <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
-                <button class="chip js-chip" aria-pressed="false">Transação <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
-                <button class="chip js-chip" aria-pressed="false">Categoria <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+                <button class="chip sq" aria-label="Buscar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/></svg></button>
+                <button class="chip js-chip" aria-pressed="false">Data <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+                <button class="chip js-chip" aria-pressed="false">Transação <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+                <button class="chip js-chip" aria-pressed="false">Categoria <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
               </div>
 
               <div class="sums">
                 <div class="sum">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B7A3E" stroke-width="2.2"><path d="M7 7 17 17"/><path d="M17 9v8H9"/></svg>
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1B7A3E" stroke-width="2.2"><path d="M7 7 17 17"/><path d="M17 9v8H9"/></svg>
                   <div class="k">Entradas (setembro)</div>
                   <div class="v in js-money">R$ 2.645,13</div>
                 </div>
                 <div class="sum">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--arrow-out)" stroke-width="2.2"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--arrow-out)" stroke-width="2.2"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
                   <div class="k">Saídas (setembro)</div>
                   <div class="v js-money">R$ 2.800,13</div>
                 </div>
@@ -407,7 +407,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
                 <h3 style="font-size:17px">Nada agendado</h3>
                 <p class="muted" style="margin:4px 0 0">Quando você agendar um Pix ou um pagamento, ele aparece aqui.</p>
                 <button class="pill js-soon" data-msg="Agendar um Pix" style="margin-top:16px">Agendar um Pix
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="m9 5 7 7-7 7"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="m9 5 7 7-7 7"/></svg>
                 </button>
               </div>
               <div style="height:24px"></div>
@@ -421,7 +421,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <!-- ===== 3. CARTÕES ===== -->
       <section class="screen" aria-label="Cartões">
         <div class="head"><h1>Cartões</h1>
-          <button class="ico js-soon" data-msg="Pedir cartão adicional" aria-label="Adicionar cartão"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button class="ico js-soon" data-msg="Pedir cartão adicional" aria-label="Adicionar cartão"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg></button>
         </div>
         <div class="plastic" id="plastic">
           <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -477,19 +477,19 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 
   <div class="stickybar" id="stickybar">
     <div class="hrow">
-      <span class="back" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m15 5-7 7 7 7"/></svg></span>
+      <span class="back" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m15 5-7 7 7 7"/></svg></span>
       <div class="col">
         <h2>Histórico</h2>
         <div class="sub">Saldo em conta: <span class="js-money">R$ 0,00</span></div>
       </div>
-      <button class="ico js-eye" aria-label="Mostrar ou ocultar valores"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-      <button class="ico js-soon" data-msg="Central de ajuda" aria-label="Ajuda"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9.2"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2-2.4 3.3"/><path d="M12 17h.01"/></svg></button>
+      <button class="ico js-eye" aria-label="Mostrar ou ocultar valores"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      <button class="ico js-soon" data-msg="Central de ajuda" aria-label="Ajuda"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9.2"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2-2.4 3.3"/><path d="M12 17h.01"/></svg></button>
     </div>
     <div class="filters">
-      <button class="chip sq" aria-label="Buscar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/></svg></button>
-      <button class="chip js-chip" aria-pressed="false">Data <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
-      <button class="chip js-chip" aria-pressed="false">Transação <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
-      <button class="chip js-chip" aria-pressed="false">Categoria <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+      <button class="chip sq" aria-label="Buscar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="6.6"/><path d="m16 16 4.6 4.6"/></svg></button>
+      <button class="chip js-chip" aria-pressed="false">Data <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+      <button class="chip js-chip" aria-pressed="false">Transação <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
+      <button class="chip js-chip" aria-pressed="false">Categoria <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button>
     </div>
   </div>
 
@@ -503,7 +503,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   <div class="detail" id="detail" aria-hidden="true">
     <div class="dhead">
       <button class="dback" id="dback" aria-label="Voltar">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="m10 6-6 6 6 6"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="m10 6-6 6 6 6"/></svg>
       </button>
       <div class="logo" id="dlogo">L</div>
       <div class="dname" id="dname">—</div>
@@ -514,14 +514,14 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <div class="dvalue js-money" id="dvalue">R$ 0,00</div>
       <div class="dlist">
         <button class="drow js-soon" data-msg="Escolha uma nova categoria">
-          <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2.4"/><rect x="13" y="3" width="8" height="8" rx="2.4"/><rect x="3" y="13" width="8" height="8" rx="2.4"/><rect x="13" y="13" width="8" height="8" rx="2.4"/></svg></span>
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2.4"/><rect x="13" y="3" width="8" height="8" rx="2.4"/><rect x="3" y="13" width="8" height="8" rx="2.4"/><rect x="13" y="13" width="8" height="8" rx="2.4"/></svg></span>
           <span style="flex:1"><span class="dt" id="dcat">Outros</span><span class="ds">Alterar tipo de categoria</span></span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg>
         </button>
         <button class="drow js-soon" data-msg="Abrimos o formulário de contestação">
-          <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>
           <span style="flex:1"><span class="dt">Contestar compra</span><span class="ds">Informe problemas com a sua compra</span></span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.6"><path d="m9 5 7 7-7 7"/></svg>
         </button>
       </div>
     </div>
